@@ -132,13 +132,13 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
+                android:id="@+id/button_toggle_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatButton
                     style="@style/ToggleButton"
-                    android:id="@+id/button"
                     android:layout_marginStart="@dimen/distance_from_screen"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/toggle_button_height"

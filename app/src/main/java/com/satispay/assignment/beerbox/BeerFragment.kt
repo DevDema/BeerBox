@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.satispay.assignment.beerbox.databinding.FragmentBeerBinding
@@ -48,6 +50,20 @@ class BeerFragment: Fragment() {
             ).show()
         })
 
-        binding.button.isActivated = true
+        binding.buttonToggleLayout.forEach { childView ->
+            (childView as? Button)?.setOnClickListener {
+                clearAllActivated()
+                it.isActivated = true
+                // Add more logic here.
+            }
+        }
+
+        binding.scrollviewFilterButtons.isHorizontalScrollBarEnabled = false
+    }
+
+    private fun clearAllActivated() {
+        binding.buttonToggleLayout.forEach {
+            (it as? Button)?.isActivated = false
+        }
     }
 }
