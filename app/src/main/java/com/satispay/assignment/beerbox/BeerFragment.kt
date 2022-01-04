@@ -47,5 +47,7 @@ class BeerFragment: Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
         })
+
+        binding.button.isActivated = true
     }
 }

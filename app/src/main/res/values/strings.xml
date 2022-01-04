@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">Beer Box</string>
     <string name="beer_fragment_title">BeerFragment</string>
+    <string name="search_label">Search</string>
+    <string name="beer_box_title">Beer <b>Box</b></string>
+    <string name="weekend_offers_label">Weekend Offers</string>
+    <string name="weekend_offers_subtitle">Free shipping on orders over 60€</string>
+    <string name="blonde_label">Blonde</string>
+    <string name="lager_label">Lager</string>
+    <string name="malts_label">Malts</string>
+    <string name="stouts_strong_label"><![CDATA[Stouts & Strong]]></string>
 </resources>
