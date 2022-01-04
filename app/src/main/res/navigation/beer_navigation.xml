@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/beer_navigation"
+        app:startDestination="@id/beerFragment">
+
+    <fragment
+            android:id="@+id/beerFragment"
+            android:name="com.satispay.assignment.beerbox.BeerFragment"
+            android:label="@string/beer_fragment_title"
+            tools:layout="@layout/fragment_beer"/>
+</navigation>
