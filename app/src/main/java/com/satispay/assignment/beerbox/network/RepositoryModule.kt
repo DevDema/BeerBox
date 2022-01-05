@@ -16,4 +16,11 @@ object RepositoryModule {
         beerService: BeerService
     ): BeerRepository =
         BeerRepository(beerService)
+
+    @Singleton
+    @Provides
+    fun provideImageRepository(
+        imageService: ImageService
+    ): ImageRepository =
+        ImageRepository(imageService)
 }

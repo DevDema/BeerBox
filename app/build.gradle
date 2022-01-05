@@ -46,6 +46,7 @@ android {
     productFlavors {
         punkV2 {
             buildConfigField("String", "BEERS_BASE_URL", "\"https://api.punkapi.com/v2/\"")
+            buildConfigField("String", "IMAGES_BASE_URL", "\"https://images.punkapi.com/v2/\"")
         }
     }
 }

@@ -3,7 +3,8 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".BeerActivity">
 
     <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/beer_box_title"
@@ -175,6 +176,8 @@
             android:layout_marginTop="@dimen/margin_medium"
             android:layout_marginBottom="@dimen/margin_medium"
             android:layout_marginHorizontal="@dimen/distance_from_screen"
+            tools:listitem="@layout/item_beer"
+
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/scrollview_filter_buttons"

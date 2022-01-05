@@ -9,30 +9,24 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ApiModule {
+object ImageApiModule {
 
     @Singleton
     @Provides
-    fun provideGsonBuilder(): Gson =
-        GsonBuilder()
-            .excludeFieldsWithoutExposeAnnotation()
-            .create()
-
-    @Singleton
-    @Provides
-    fun provideRetrofit(gson: Gson): Retrofit.Builder =
+    @Named("images")
+    fun provideRetrofitImages(): Retrofit.Builder =
         Retrofit.Builder()
-            .baseUrl(BuildConfig.BEERS_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .baseUrl(BuildConfig.IMAGES_BASE_URL)
 
     @Singleton
     @Provides
-    fun provideBeerService(retrofit: Retrofit.Builder): BeerService =
+    fun provideImageService(@Named("images") retrofit: Retrofit.Builder): ImageService =
         retrofit
             .build()
-            .create(BeerService::class.java)
+            .create(ImageService::class.java)
 }
