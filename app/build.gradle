@@ -39,6 +39,10 @@ android {
         viewBinding true
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     productFlavors {
         punkV2 {
             buildConfigField("String", "BEERS_BASE_URL", "\"https://api.punkapi.com/v2/\"")

@@ -34,7 +34,7 @@
             app:layout_constraintTop_toBottomOf="@id/beer_box_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toTopOf="@id/gift_box_card_view">
 
         <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -167,4 +167,16 @@
                     android:text="@string/stouts_strong_label" />
         </LinearLayout>
     </HorizontalScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_beer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginHorizontal="@dimen/distance_from_screen"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/scrollview_filter_buttons"
+            app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

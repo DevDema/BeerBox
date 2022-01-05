@@ -8,4 +8,5 @@
     <dimen name="card_view_elevation">20dp</dimen>
     <dimen name="toggle_button_padding_horizontal">32dp</dimen>
     <dimen name="toggle_button_height">35dp</dimen>
+    <dimen name="button_small_height">40dp</dimen>
 </resources>
