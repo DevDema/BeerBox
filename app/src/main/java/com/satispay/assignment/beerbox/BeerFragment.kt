@@ -8,23 +8,22 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.view.forEach
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.satispay.assignment.beerbox.databinding.BeerBottomLayoutBinding
 import com.satispay.assignment.beerbox.databinding.FragmentBeerBinding
 import com.satispay.assignment.beerbox.model.Beer
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BeerFragment: Fragment() {
+class BeerFragment : Fragment() {
 
     private val viewModel: BeerViewModel by activityViewModels()
     private lateinit var binding: FragmentBeerBinding
     private lateinit var adapter: BeerAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,20 +46,34 @@ class BeerFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.recyclerViewBeer.layoutManager = LinearLayoutManager(requireContext())
+        adapter = BeerAdapter(
+            requireContext().applicationContext,
+            viewModel,
+            emptyList<BeerAdapterItem>().toMutableList()
+        )
+        binding.recyclerViewBeer.adapter = adapter
 
-        viewModel.beers.observe(this, {
-            adapter = BeerAdapter(requireContext().applicationContext, viewModel, it)
-            binding.recyclerViewBeer.adapter = adapter
+        viewModel.beersAdapterItems.observe(this, { beerAdapterItem ->
+            val beerInAdapter =
+                adapter.dataSet.firstOrNull { it.beer.id == beerAdapterItem.beer.id }
+            val position = beerAdapterItem.beer.id - 1
+
+            if (beerInAdapter == null) {
+                adapter.dataSet.add(position, beerAdapterItem)
+                adapter.notifyItemInserted(position)
+            } else if (beerAdapterItem != beerInAdapter) {
+                adapter.dataSet[position] = beerAdapterItem
+                adapter.notifyItemChanged(position)
+            }
         })
 
-        viewModel.beerImage.observe(this, {
-            adapter.onImageLoaded(it.first, it.second)
-        })
-
-        viewModel.beerDetailed.observe(this, { showDetails(it.first, it.second, view as ViewGroup) })
+        viewModel.beerDetailed.observe(
+            this,
+            { showDetails(it.first, it.second, view as ViewGroup) })
 
         viewModel.toastMessage.observe(this, {
-            Toast.makeText(this@BeerFragment.requireContext().applicationContext,
+            Toast.makeText(
+                this@BeerFragment.requireContext().applicationContext,
                 it,
                 Toast.LENGTH_SHORT
             ).show()

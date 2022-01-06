@@ -1,7 +1,6 @@
 package com.satispay.assignment.beerbox
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +12,8 @@ import com.satispay.assignment.beerbox.model.Beer
 class BeerAdapter(
     private val context: Context,
     private val binder: BeerAdapterBinder,
-    private val dataSet: List<Beer>
+    val dataSet: MutableList<BeerAdapterItem>
 ) : RecyclerView.Adapter<BeerAdapter.ViewHolder>() {
-
-    private val bitmapMap = mutableMapOf<Int, Bitmap?>()
-    private val loadingMap = mutableMapOf<Int, Boolean>()
 
     class ViewHolder(val itemBinding: ItemBeerBinding) : RecyclerView.ViewHolder(itemBinding.root)
 
@@ -32,28 +28,27 @@ class BeerAdapter(
         )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val beer = dataSet[position]
-        holder.itemBinding.beer = beer
+        val beerAdapterItem = dataSet[position]
+        holder.itemBinding.beer = beerAdapterItem.beer
 
         holder.itemBinding.reloadButton.setOnClickListener {
-            startLoadingImage(holder, position, beer.imageUrl)
+            showLoading(holder)
+            binder.loadImage(beerAdapterItem.beer)
         }
 
         holder.itemBinding.moreInfoButton.setOnClickListener {
-            binder.showDetails(beer, bitmapMap[position])
+            binder.showDetails(beerAdapterItem.beer, beerAdapterItem.image)
         }
 
-        if (loadingMap.getOrDefault(position, true)) {
-            startLoadingImage(holder, position, beer.imageUrl)
+        if (beerAdapterItem.loading) {
+            showLoading(holder)
         } else {
             holder.itemBinding.progressCircular.visibility = View.INVISIBLE
             holder.itemBinding.beerImage.visibility = View.VISIBLE
 
-            val image = bitmapMap[position]
-
-            if (image != null) {
+            if (beerAdapterItem.image != null) {
                 holder.itemBinding.beerImage.setBackgroundColor(context.getColor(android.R.color.transparent))
-                holder.itemBinding.beerImage.setImageBitmap(image)
+                holder.itemBinding.beerImage.setImageBitmap(beerAdapterItem.image)
             } else {
                 holder.itemBinding.reloadButton.visibility = View.VISIBLE
                 holder.itemBinding.beerImage.setBackgroundColor(context.getColor(android.R.color.tab_indicator_text))
@@ -61,18 +56,10 @@ class BeerAdapter(
         }
     }
 
-    private fun startLoadingImage(holder: ViewHolder, position: Int, beerUrl: String) {
+    private fun showLoading(holder: ViewHolder) {
         holder.itemBinding.progressCircular.visibility = View.VISIBLE
         holder.itemBinding.beerImage.visibility = View.INVISIBLE
         holder.itemBinding.reloadButton.visibility = View.GONE
-
-        binder.loadImage(position, beerUrl.replace(BuildConfig.IMAGES_BASE_URL, ""))
-    }
-
-    fun onImageLoaded(position: Int, image: Bitmap?) {
-        bitmapMap[position] = image
-        loadingMap[position] = false
-        notifyItemChanged(position)
     }
 
     override fun getItemCount() = dataSet.size

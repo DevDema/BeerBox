@@ -16,7 +16,7 @@
             android:text="@string/beer_box_title"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
             app:layout_constraintVertical_bias="0"
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintBottom_toTopOf="@id/search_text_input_layout" />
@@ -34,7 +34,7 @@
             app:layout_constraintVertical_bias="0"
             app:layout_constraintTop_toBottomOf="@id/beer_box_title"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
             app:layout_constraintBottom_toTopOf="@id/gift_box_card_view">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -53,7 +53,7 @@
             app:layout_constraintVertical_bias="0"
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
             app:layout_constraintBottom_toTopOf="@id/scrollview_filter_buttons"
             app:layout_constraintTop_toBottomOf="@id/search_text_input_layout">
 
@@ -129,7 +129,7 @@
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintTop_toBottomOf="@id/gift_box_card_view"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
             app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
@@ -169,6 +169,16 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_beer"
             android:layout_width="0dp"
@@ -177,8 +187,8 @@
             android:layout_marginHorizontal="@dimen/distance_from_screen"
             tools:listitem="@layout/item_beer"
 
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/scrollview_filter_buttons"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

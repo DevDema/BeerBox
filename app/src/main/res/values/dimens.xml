@@ -12,6 +12,7 @@
     <dimen name="list_beer_image_height">130dp</dimen>
     <dimen name="list_beer_image_width">40dp</dimen>
     <dimen name="beer_image_width">60dp</dimen>
+    <dimen name="max_beer_image_width">90dp</dimen>
     <dimen name="beer_image_height">195dp</dimen>
-
+    <dimen name="max_beer_image_height">292dp</dimen>
 </resources>

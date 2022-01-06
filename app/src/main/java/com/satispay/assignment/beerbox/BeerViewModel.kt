@@ -22,28 +22,27 @@ class BeerViewModel @Inject constructor(
     private val imageRepository: ImageRepository
 ) : ViewModel(), BeerAdapterBinder {
 
-    private val beerList = MutableLiveData<List<Beer>>()
+    private val beerList = MutableLiveData<BeerAdapterItem>()
     private val internalToastMessage = MutableLiveData<CharSequence>()
-    private val imageLoaded = MutableLiveData<Pair<Int, Bitmap?>>()
     private val internalBeerDetailed = MutableLiveData<Pair<Beer, Bitmap?>>()
 
-    val beers: LiveData<List<Beer>>
+    val beersAdapterItems: LiveData<BeerAdapterItem>
         get() = beerList
     val toastMessage: LiveData<CharSequence>
         get() = internalToastMessage
-    val beerImage: LiveData<Pair<Int, Bitmap?>>
-        get() = imageLoaded
     val beerDetailed: LiveData<Pair<Beer, Bitmap?>>
         get() = internalBeerDetailed
 
     fun loadBeers() {
         viewModelScope.launch {
             kotlin.runCatching {
-                val beers = withContext(Dispatchers.IO) {
+                withContext(Dispatchers.IO) {
                     beerRepository.getBeers()
+                }.forEach {
+                    beerList.value = BeerAdapterItem(it)
+                    loadImage(it)
                 }
 
-                beerList.value = beers
             }.exceptionOrNull()?.run {
                 printStackTrace()
                 internalToastMessage.value = "Error getting beer data: $message"
@@ -51,23 +50,28 @@ class BeerViewModel @Inject constructor(
         }
     }
 
-    override fun loadImage(position: Int, urlString: String) {
+    override fun loadImage(beer: Beer) {
         viewModelScope.launch {
             kotlin.runCatching {
                 val image = withContext(Dispatchers.IO) {
                     BitmapFactory.decodeStream(
-                        imageRepository.getImage(urlString).byteStream()
+                        imageRepository.getImage(
+                            beer.imageUrl
+                                .replace(BuildConfig.IMAGES_BASE_URL, "")
+                        )
+                            .byteStream()
                     )
                 }
 
-                imageLoaded.value = position to image
+                beerList.value = BeerAdapterItem(beer, false, image)
             }.exceptionOrNull()?.run {
-                Log.println(Log.WARN, BeerViewModel::class.java.name,
-                    "Error loading image for position $position: $message"
+                Log.println(
+                    Log.WARN, BeerViewModel::class.java.name,
+                    "Error loading image for ${beer.name}: $message"
                 )
-                imageLoaded.value = position to null
-            }
 
+                beerList.value = BeerAdapterItem(beer, false)
+            }
         }
     }
 

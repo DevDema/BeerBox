@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -7,8 +9,7 @@
                 type="com.satispay.assignment.beerbox.model.Beer" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:animateLayoutChanges="true"
             android:layout_height="wrap_content">
@@ -20,8 +21,10 @@
                 android:layout_marginTop="@dimen/margin_medium"
                 android:layout_marginBottom="@dimen/margin_medium"
                 android:layout_marginHorizontal="@dimen/distance_from_screen"
-                app:layout_constraintHeight_min="@dimen/beer_image_height"
+
+
                 app:layout_constraintWidth_min="@dimen/beer_image_width"
+                app:layout_constraintWidth_max="@dimen/max_beer_image_width"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
                 app:layout_constraintTop_toTopOf="@id/title"
@@ -45,6 +48,7 @@
                 android:text="@{beer.name}"
                 android:textStyle="bold"
                 android:textSize="19sp"
+                android:layout_marginStart="@dimen/margin_medium"
                 android:layout_marginTop="@dimen/distance_from_screen"
                 android:layout_marginEnd="@dimen/distance_from_screen"
                 tools:text="Sunk Punk"
@@ -63,6 +67,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{beer.tagline}"
                 android:textSize="17sp"
+                android:layout_marginStart="@dimen/margin_medium"
                 android:layout_marginEnd="@dimen/distance_from_screen"
                 tools:text="Ocean Fermented Lager"
 
@@ -79,11 +84,13 @@
                 android:layout_height="wrap_content"
                 android:text="@{beer.description}"
                 android:textSize="17sp"
+                android:layout_marginStart="@dimen/margin_medium"
                 android:layout_marginTop="@dimen/distance_from_screen"
                 android:layout_marginEnd="@dimen/distance_from_screen"
                 android:layout_marginBottom="@dimen/distance_from_screen"
                 tools:text="It's rumoured just a drop can calm the fiercest of storms. A balance of sweet, salt and savoury, citrus, spruce and caramel. Fermented at the bottom of the North Sea, which just so happens to be the perfect temperature for lagers to ferment."
 
+                app:layout_constraintVertical_bias="0"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintEnd_toEndOf="parent"
