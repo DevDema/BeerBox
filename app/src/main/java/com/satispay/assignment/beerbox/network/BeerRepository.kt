@@ -6,5 +6,11 @@ class BeerRepository(
     private val service: BeerService
 ) {
 
-    suspend fun getBeers(): List<Beer> = service.getBeers()
+    suspend fun getBeers(page: Int): List<Beer> {
+        if(page < 1) {
+            error("Invalid page $page. Should be >= 1.")
+        }
+
+        return service.getBeers(page)
+    }
 }

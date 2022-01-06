@@ -25,7 +25,7 @@ data class Beer(
     val description: String,
     @SerializedName("ebc")
     @Expose
-    val ebc: Int,
+    val ebc: Float,
     @SerializedName("first_brewed")
     @Expose
     val firstBrewed: String,
@@ -40,7 +40,7 @@ data class Beer(
     val id: Int,
     @SerializedName("image_url")
     @Expose
-    val imageUrl: String,
+    val imageUrl: String?,
     @SerializedName("ingredients")
     @Expose
     val ingredients: Ingredients,

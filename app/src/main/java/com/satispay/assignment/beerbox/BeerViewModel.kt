@@ -22,27 +22,44 @@ class BeerViewModel @Inject constructor(
     private val imageRepository: ImageRepository
 ) : ViewModel(), BeerAdapterBinder {
 
-    private val beerList = MutableLiveData<BeerAdapterItem>()
+    var currentPage = 1
+    lateinit var defaultImage: Bitmap
+    private val beerList = mutableListOf<BeerAdapterItem>()
+    private val beerAdapterItems = MutableLiveData<List<BeerAdapterItem>>()
     private val internalToastMessage = MutableLiveData<CharSequence>()
-    private val internalBeerDetailed = MutableLiveData<Pair<Beer, Bitmap?>>()
+    private val internalBeerDetailed = MutableLiveData<Pair<Beer?, Bitmap?>>()
 
-    val beersAdapterItems: LiveData<BeerAdapterItem>
-        get() = beerList
+    val beersAdapterItems: LiveData<List<BeerAdapterItem>>
+        get() = beerAdapterItems
     val toastMessage: LiveData<CharSequence>
         get() = internalToastMessage
-    val beerDetailed: LiveData<Pair<Beer, Bitmap?>>
+    val beerDetailed: LiveData<Pair<Beer?, Bitmap?>>
         get() = internalBeerDetailed
 
     fun loadBeers() {
+        if (beersAdapterItems.value.isNullOrEmpty()) {
+            loadPage(1)
+        }
+    }
+
+    fun loadNextPage() {
+        loadPage(++currentPage)
+    }
+
+    private fun loadPage(page: Int) {
         viewModelScope.launch {
             kotlin.runCatching {
                 withContext(Dispatchers.IO) {
-                    beerRepository.getBeers()
-                }.forEach {
-                    beerList.value = BeerAdapterItem(it)
-                    loadImage(it)
-                }
+                    beerRepository.getBeers(page)
+                }.map { BeerAdapterItem(it) }.let { list ->
+                    beerList.addAll(list)
 
+                    list.forEach {
+                        loadImage(it.beer)
+                    }
+
+                    beerAdapterItems.value = list
+                }
             }.exceptionOrNull()?.run {
                 printStackTrace()
                 internalToastMessage.value = "Error getting beer data: $message"
@@ -52,30 +69,38 @@ class BeerViewModel @Inject constructor(
 
     override fun loadImage(beer: Beer) {
         viewModelScope.launch {
-            kotlin.runCatching {
-                val image = withContext(Dispatchers.IO) {
-                    BitmapFactory.decodeStream(
-                        imageRepository.getImage(
-                            beer.imageUrl
-                                .replace(BuildConfig.IMAGES_BASE_URL, "")
+            val beerList = withContext(Dispatchers.IO) {
+                kotlin.runCatching {
+                    val image = beer.imageUrl?.let {
+                        BitmapFactory.decodeStream(
+                            imageRepository.getImage(
+                                it.replace(BuildConfig.IMAGES_BASE_URL, "")
+                            ).byteStream()
                         )
-                            .byteStream()
+                    } ?: defaultImage
+
+                    beerList[beer.id - 1] = BeerAdapterItem(beer, false, image)
+                }.exceptionOrNull()?.run {
+                    Log.println(
+                        Log.WARN, BeerViewModel::class.java.name,
+                        "Error loading image for ${beer.name}: $this"
                     )
+
+                    beerList[beer.id - 1] = BeerAdapterItem(beer, false)
                 }
 
-                beerList.value = BeerAdapterItem(beer, false, image)
-            }.exceptionOrNull()?.run {
-                Log.println(
-                    Log.WARN, BeerViewModel::class.java.name,
-                    "Error loading image for ${beer.name}: $message"
-                )
-
-                beerList.value = BeerAdapterItem(beer, false)
+                beerList
             }
+
+            beerAdapterItems.value = beerList
         }
     }
 
     override fun showDetails(beer: Beer, bitmap: Bitmap?) {
         internalBeerDetailed.value = beer to bitmap
+    }
+
+    fun hideDetails() {
+        internalBeerDetailed.value = null to null
     }
 }

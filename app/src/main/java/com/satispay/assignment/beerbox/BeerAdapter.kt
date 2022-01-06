@@ -7,27 +7,47 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.satispay.assignment.beerbox.databinding.ItemBeerBinding
-import com.satispay.assignment.beerbox.model.Beer
+import com.satispay.assignment.beerbox.databinding.ItemProgressBinding
 
 class BeerAdapter(
     private val context: Context,
     private val binder: BeerAdapterBinder,
     val dataSet: MutableList<BeerAdapterItem>
-) : RecyclerView.Adapter<BeerAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    var isContentLoading = false
 
     class ViewHolder(val itemBinding: ItemBeerBinding) : RecyclerView.ViewHolder(itemBinding.root)
+    class ViewHolderProgress(view: View) : RecyclerView.ViewHolder(view)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(
-            DataBindingUtil.inflate(
-                LayoutInflater.from(parent.context),
-                R.layout.item_beer,
-                parent,
-                false
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        when (viewType) {
+            ITEM_TYPE_BEER -> ViewHolder(
+                DataBindingUtil.inflate(
+                    LayoutInflater.from(parent.context),
+                    R.layout.item_beer,
+                    parent,
+                    false
+                )
             )
-        )
+            ITEM_TYPE_PROGRESS -> ViewHolderProgress(
+                ItemProgressBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                ).root
+            )
+            else -> error("Invalid view type")
+        }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when(holder.itemViewType) {
+            ITEM_TYPE_BEER -> onBindBeerViewHolder(holder as ViewHolder, position)
+            ITEM_TYPE_PROGRESS -> return
+        }
+    }
+
+    private fun onBindBeerViewHolder(holder: ViewHolder, position: Int) {
         val beerAdapterItem = dataSet[position]
         holder.itemBinding.beer = beerAdapterItem.beer
 
@@ -47,11 +67,13 @@ class BeerAdapter(
             holder.itemBinding.beerImage.visibility = View.VISIBLE
 
             if (beerAdapterItem.image != null) {
+                holder.itemBinding.reloadButton.visibility = View.INVISIBLE
                 holder.itemBinding.beerImage.setBackgroundColor(context.getColor(android.R.color.transparent))
                 holder.itemBinding.beerImage.setImageBitmap(beerAdapterItem.image)
             } else {
                 holder.itemBinding.reloadButton.visibility = View.VISIBLE
                 holder.itemBinding.beerImage.setBackgroundColor(context.getColor(android.R.color.tab_indicator_text))
+                holder.itemBinding.beerImage.setImageBitmap(null)
             }
         }
     }
@@ -62,5 +84,31 @@ class BeerAdapter(
         holder.itemBinding.reloadButton.visibility = View.GONE
     }
 
+    fun showContentLoading() {
+        isContentLoading = true
+
+        dataSet.add(dataSet.last())
+        notifyItemInserted(dataSet.size -1)
+    }
+
+    fun hideContentLoading() {
+        isContentLoading = false
+        dataSet.removeLast()
+
+        notifyItemRemoved(dataSet.size)
+    }
+
+    override fun getItemViewType(position: Int): Int =
+        if(position == itemCount - 1 && isContentLoading) {
+            ITEM_TYPE_PROGRESS
+        } else {
+            ITEM_TYPE_BEER
+        }
+
     override fun getItemCount() = dataSet.size
+
+    companion object {
+        const val ITEM_TYPE_PROGRESS = 1
+        const val ITEM_TYPE_BEER = 0
+    }
 }
