@@ -122,6 +122,15 @@ class BeerFragment : Fragment() {
             ).show()
         })
 
+        viewModel.filteredBeersAdapterItems.observe(this, {
+            adapter.onFiltered(it)
+        })
+
+        viewModel.nothingMatchesVisibilityText.observe(this, {
+            binding.recyclerViewBeer.visibility = if(it) View.INVISIBLE else View.VISIBLE
+            binding.nothingMatchesText.visibility = if(it) View.VISIBLE else View.GONE
+        })
+
         binding.searchText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -152,7 +161,11 @@ class BeerFragment : Fragment() {
 
         binding.buttonToggleLayout.forEach { childView ->
             (childView as? Button)?.setOnClickListener {
-                binding.searchText.setText((it as Button).text)
+                if(!it.isActivated) {
+                    binding.searchText.setText((it as Button).text)
+                } else {
+                    binding.searchText.setText("")
+                }
             }
         }
 

@@ -8,4 +8,8 @@ interface BeerAdapterBinder {
     fun loadImage(beer: Beer)
 
     fun showDetails(beer: Beer, bitmap: Bitmap?)
+
+    fun onNoBeerResults()
+
+    fun onBeerResults(filteredValues: List<BeerAdapterItem>)
 }

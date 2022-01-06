@@ -26,11 +26,17 @@ class BeerViewModel @Inject constructor(
     lateinit var defaultImage: Bitmap
     private val beerList = mutableListOf<BeerAdapterItem>()
     private val beerAdapterItems = MutableLiveData<List<BeerAdapterItem>>()
+    private val nothingMatchesVisibility = MutableLiveData<Boolean>()
+    private val filteredBeerAdapterItems = MutableLiveData<List<BeerAdapterItem>>()
     private val internalToastMessage = MutableLiveData<CharSequence>()
     private val internalBeerDetailed = MutableLiveData<Pair<Beer?, Bitmap?>>()
 
     val beersAdapterItems: LiveData<List<BeerAdapterItem>>
         get() = beerAdapterItems
+    val nothingMatchesVisibilityText: LiveData<Boolean>
+        get() = nothingMatchesVisibility
+    val filteredBeersAdapterItems: LiveData<List<BeerAdapterItem>>
+        get() = filteredBeerAdapterItems
     val toastMessage: LiveData<CharSequence>
         get() = internalToastMessage
     val beerDetailed: LiveData<Pair<Beer?, Bitmap?>>
@@ -94,6 +100,15 @@ class BeerViewModel @Inject constructor(
 
             beerAdapterItems.value = beerList
         }
+    }
+
+    override fun onNoBeerResults() {
+        nothingMatchesVisibility.value = true
+    }
+
+    override fun onBeerResults(filteredValues: List<BeerAdapterItem>) {
+        nothingMatchesVisibility.value = false
+        filteredBeerAdapterItems.value = filteredValues
     }
 
     override fun showDetails(beer: Beer, bitmap: Bitmap?) {

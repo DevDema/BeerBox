@@ -10,6 +10,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.satispay.assignment.beerbox.databinding.ItemBeerBinding
 import com.satispay.assignment.beerbox.databinding.ItemProgressBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class BeerAdapter(
     private val context: Context,
@@ -60,6 +63,10 @@ class BeerAdapter(
         }
 
         holder.itemBinding.moreInfoButton.setOnClickListener {
+            binder.showDetails(beerAdapterItem.beer, beerAdapterItem.image)
+        }
+
+        holder.itemBinding.root.setOnClickListener {
             binder.showDetails(beerAdapterItem.beer, beerAdapterItem.image)
         }
 
@@ -144,17 +151,25 @@ class BeerAdapter(
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                val oldSize = filteredDataSet.size
-                filteredDataSet = filteredValues.toMutableList()
-
-                if (oldSize > filteredDataSet.size) {
-                    notifyItemRangeRemoved(filteredDataSet.size, oldSize)
-                } else if (oldSize < filteredDataSet.size) {
-                    notifyItemRangeRemoved(oldSize, filteredDataSet.size)
+                if(filteredValues.isEmpty()) {
+                    CoroutineScope(Dispatchers.Main).launch { binder.onNoBeerResults() }
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch { binder.onBeerResults(filteredValues) }
                 }
-
-                notifyItemRangeChanged(0, filteredDataSet.size)
             }
 
         }
+
+    fun onFiltered(list: List<BeerAdapterItem>) {
+        val oldSize = filteredDataSet.size
+        filteredDataSet = list.toMutableList()
+
+        if (oldSize > filteredDataSet.size) {
+            notifyItemRangeRemoved(filteredDataSet.size, oldSize)
+        } else if (oldSize < filteredDataSet.size) {
+            notifyItemRangeRemoved(oldSize, filteredDataSet.size)
+        }
+
+        notifyItemRangeChanged(0, filteredDataSet.size)
+    }
 }
