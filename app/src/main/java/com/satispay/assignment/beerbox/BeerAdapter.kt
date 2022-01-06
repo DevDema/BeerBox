@@ -4,6 +4,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.satispay.assignment.beerbox.databinding.ItemBeerBinding
@@ -13,8 +15,9 @@ class BeerAdapter(
     private val context: Context,
     private val binder: BeerAdapterBinder,
     val dataSet: MutableList<BeerAdapterItem>
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
+    private var filteredDataSet: MutableList<BeerAdapterItem> = dataSet
     var isContentLoading = false
 
     class ViewHolder(val itemBinding: ItemBeerBinding) : RecyclerView.ViewHolder(itemBinding.root)
@@ -41,14 +44,14 @@ class BeerAdapter(
         }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(holder.itemViewType) {
+        when (holder.itemViewType) {
             ITEM_TYPE_BEER -> onBindBeerViewHolder(holder as ViewHolder, position)
             ITEM_TYPE_PROGRESS -> return
         }
     }
 
     private fun onBindBeerViewHolder(holder: ViewHolder, position: Int) {
-        val beerAdapterItem = dataSet[position]
+        val beerAdapterItem = filteredDataSet[position]
         holder.itemBinding.beer = beerAdapterItem.beer
 
         holder.itemBinding.reloadButton.setOnClickListener {
@@ -87,28 +90,71 @@ class BeerAdapter(
     fun showContentLoading() {
         isContentLoading = true
 
+        filteredDataSet.add(dataSet.last())
         dataSet.add(dataSet.last())
-        notifyItemInserted(dataSet.size -1)
+
+        notifyItemInserted(dataSet.size - 1)
     }
 
     fun hideContentLoading() {
         isContentLoading = false
+
         dataSet.removeLast()
+        filteredDataSet.removeLast()
 
         notifyItemRemoved(dataSet.size)
     }
 
     override fun getItemViewType(position: Int): Int =
-        if(position == itemCount - 1 && isContentLoading) {
+        if (position == itemCount - 1 && isContentLoading) {
             ITEM_TYPE_PROGRESS
         } else {
             ITEM_TYPE_BEER
         }
 
-    override fun getItemCount() = dataSet.size
+    override fun getItemCount() = filteredDataSet.size
 
     companion object {
         const val ITEM_TYPE_PROGRESS = 1
         const val ITEM_TYPE_BEER = 0
     }
+
+    override fun getFilter(): Filter =
+        object : Filter() {
+            private var filteredValues = listOf<BeerAdapterItem>()
+
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                filteredValues = if (constraint.isNullOrBlank()) {
+                    dataSet
+                } else {
+                    dataSet.filter {
+                        it.beer.name
+                            .lowercase()
+                            .contains(
+                                constraint
+                                    .toString()
+                                    .lowercase()
+                            )
+                    }
+                }
+
+                return FilterResults().apply {
+                    values = filteredValues
+                }
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                val oldSize = filteredDataSet.size
+                filteredDataSet = filteredValues.toMutableList()
+
+                if (oldSize > filteredDataSet.size) {
+                    notifyItemRangeRemoved(filteredDataSet.size, oldSize)
+                } else if (oldSize < filteredDataSet.size) {
+                    notifyItemRangeRemoved(oldSize, filteredDataSet.size)
+                }
+
+                notifyItemRangeChanged(0, filteredDataSet.size)
+            }
+
+        }
 }

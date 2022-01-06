@@ -38,6 +38,7 @@
             app:layout_constraintBottom_toTopOf="@id/gift_box_card_view">
 
         <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/search_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -106,8 +107,8 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/gift_box_subtitle"
-                    android:layout_width="267dp"
-                    android:layout_height="18dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:text="@string/weekend_offers_subtitle"
                     android:textSize="16sp"
                     android:textColor="@android:color/black"
@@ -175,10 +176,24 @@
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/margin_medium"
             android:layout_marginHorizontal="@dimen/distance_from_screen"
+            android:visibility="invisible"
             tools:listitem="@layout/item_beer"
-
+            tools:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/scrollview_filter_buttons"
             app:layout_constraintBottom_toBottomOf="parent" />
+
+    <androidx.core.widget.ContentLoadingProgressBar
+            android:id="@+id/progress_circular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyle"
+
+            android:visibility="visible"
+            tools:visibility="invisible"
+            app:layout_constraintTop_toTopOf="@id/recycler_view_beer"
+            app:layout_constraintStart_toStartOf="@id/recycler_view_beer"
+            app:layout_constraintEnd_toEndOf="@id/recycler_view_beer"
+            app:layout_constraintBottom_toBottomOf="@id/recycler_view_beer"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

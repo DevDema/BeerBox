@@ -3,11 +3,14 @@ package com.satispay.assignment.beerbox
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.core.view.children
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -30,6 +33,20 @@ class BeerFragment : Fragment() {
     private lateinit var binding: FragmentBeerBinding
     private lateinit var adapter: BeerAdapter
     private var currentBottomSheet: BottomSheetDialog? = null
+    private val recyclerViewScrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+
+            if (!recyclerView.canScrollVertically(1) &&
+                !adapter.isContentLoading) {
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    adapter.showContentLoading()
+                    viewModel.loadNextPage()
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,24 +76,18 @@ class BeerFragment : Fragment() {
             viewModel,
             emptyList<BeerAdapterItem>().toMutableList()
         )
+
+        binding.progressCircular.visibility = View.VISIBLE
         binding.recyclerViewBeer.adapter = adapter
-        binding.recyclerViewBeer.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-                if (!recyclerView.canScrollVertically(1) &&
-                    !adapter.isContentLoading) {
-
-                    CoroutineScope(Dispatchers.Main).launch {
-                        adapter.showContentLoading()
-                        viewModel.loadNextPage()
-                    }
-                }
-            }
-        })
+        binding.recyclerViewBeer.addOnScrollListener(recyclerViewScrollListener)
 
         viewModel.beersAdapterItems.observe(this, { beerAdapterItems ->
-            if(viewModel.currentPage > 1) {
+            if(viewModel.currentPage == 1) {
+                binding.progressCircular.visibility = View.GONE
+                binding.recyclerViewBeer.visibility = View.VISIBLE
+            }
+
+            if(viewModel.currentPage > 1 && adapter.dataSet.isNotEmpty()) {
                 adapter.hideContentLoading()
             }
 
@@ -111,11 +122,37 @@ class BeerFragment : Fragment() {
             ).show()
         })
 
+        binding.searchText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val selectedToggle = binding.buttonToggleLayout.children
+                    .filterIsInstance(Button::class.java)
+                    .firstOrNull { it.text.toString().lowercase() == s.toString().lowercase() }
+
+                clearAllActivatedTogglesExcept(selectedToggle)
+                selectedToggle?.isActivated = true
+
+                if(s.isNullOrBlank()) {
+                    binding.recyclerViewBeer.addOnScrollListener(recyclerViewScrollListener)
+
+                } else {
+                    binding.recyclerViewBeer.removeOnScrollListener(recyclerViewScrollListener)
+                }
+
+                if(s.isNullOrBlank() || s.length > 3) {
+                    adapter.filter.filter(s)
+                }
+            }
+        })
+
         binding.buttonToggleLayout.forEach { childView ->
             (childView as? Button)?.setOnClickListener {
-                clearAllActivated()
-                it.isActivated = true
-                // Add more logic here.
+                binding.searchText.setText((it as Button).text)
             }
         }
 
@@ -137,10 +174,14 @@ class BeerFragment : Fragment() {
         }?.show()
     }
 
-    private fun clearAllActivated() {
+    private fun clearAllActivatedTogglesExcept(exceptView: View?) {
         binding.buttonToggleLayout.forEach {
-            (it as? Button)?.isActivated = false
+            if(it !== exceptView) {
+                (it as? Button)?.isActivated = false
+            }
         }
+
+        adapter.filter.filter("")
     }
 
     override fun onDestroyView() {
