@@ -42,7 +42,6 @@ class BeerFragment : Fragment() {
             ) {
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    adapter.showContentLoading()
                     viewModel.loadNextPage()
                 }
             }
@@ -147,9 +146,6 @@ class BeerFragment : Fragment() {
 
             binding.recyclerViewBeer.visibility = View.VISIBLE
 
-            if (viewModel.currentPage > 1 && adapter.filteredDataset.isNotEmpty()) {
-                adapter.hideContentLoading()
-            }
 
             adapter.dataSet = pair.first
             adapter.onFiltered(pair.second)

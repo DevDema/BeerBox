@@ -14,6 +14,7 @@ import com.satispay.assignment.beerbox.databinding.ItemProgressBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BeerAdapter(
     private val context: Context,
@@ -164,15 +165,21 @@ class BeerAdapter(
         }
 
     fun onFiltered(list: List<BeerAdapterItem>) {
-        val oldSize = filteredDataset.size
+        val oldList = filteredDataset.toList()
         filteredDataset = list.toMutableList()
 
-        if (oldSize > filteredDataset.size) {
-            notifyItemRangeRemoved(filteredDataset.size, oldSize)
-        } else if (oldSize < filteredDataset.size) {
-            notifyItemRangeInserted(oldSize, filteredDataset.size)
+        if (oldList.size > filteredDataset.size) {
+            notifyItemRangeRemoved(filteredDataset.size, oldList.size)
+
+        } else if (oldList.size < filteredDataset.size) {
+            notifyItemRangeInserted(oldList.size, filteredDataset.size)
+
         }
 
-        notifyItemRangeChanged(0, filteredDataset.size)
+        filteredDataset.zip(oldList).forEach {
+            if (it.first != it.second) {
+                notifyItemChanged(filteredDataset.indexOf(it.first))
+            }
+        }
     }
 }
