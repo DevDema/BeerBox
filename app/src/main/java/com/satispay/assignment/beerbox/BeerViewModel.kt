@@ -24,26 +24,21 @@ class BeerViewModel @Inject constructor(
 
     var currentPage = 1
     lateinit var defaultImage: Bitmap
+
     private val beerList = mutableListOf<BeerAdapterItem>()
-    private val beerAdapterItems = MutableLiveData<List<BeerAdapterItem>>()
-    private val nothingMatchesVisibility = MutableLiveData<Boolean>()
-    private val filteredBeerAdapterItems = MutableLiveData<List<BeerAdapterItem>>()
+    private val beerAdapterItems = MutableLiveData<Pair<List<BeerAdapterItem>, List<BeerAdapterItem>>>()
     private val internalToastMessage = MutableLiveData<CharSequence>()
     private val internalBeerDetailed = MutableLiveData<Pair<Beer?, Bitmap?>>()
 
-    val beersAdapterItems: LiveData<List<BeerAdapterItem>>
+    val beersAdapterItems: LiveData<Pair<List<BeerAdapterItem>, List<BeerAdapterItem>>>
         get() = beerAdapterItems
-    val nothingMatchesVisibilityText: LiveData<Boolean>
-        get() = nothingMatchesVisibility
-    val filteredBeersAdapterItems: LiveData<List<BeerAdapterItem>>
-        get() = filteredBeerAdapterItems
     val toastMessage: LiveData<CharSequence>
         get() = internalToastMessage
     val beerDetailed: LiveData<Pair<Beer?, Bitmap?>>
         get() = internalBeerDetailed
 
     fun loadBeers() {
-        if (beersAdapterItems.value.isNullOrEmpty()) {
+        if (beersAdapterItems.value?.first.isNullOrEmpty()) {
             loadPage(1)
         }
     }
@@ -58,13 +53,14 @@ class BeerViewModel @Inject constructor(
                 withContext(Dispatchers.IO) {
                     beerRepository.getBeers(page)
                 }.map { BeerAdapterItem(it) }.let { list ->
-                    beerList.addAll(list)
+                    val oldSize = beerList.size
+                    this@BeerViewModel.beerList.addAll(list)
 
-                    list.forEach {
-                        loadImage(it.beer)
+                    beerAdapterItems.value = beerList to beerList
+
+                    list.forEachIndexed { index, beerAdapterItem ->
+                        loadImage(oldSize + index, beerAdapterItem.beer)
                     }
-
-                    beerAdapterItems.value = list
                 }
             }.exceptionOrNull()?.run {
                 printStackTrace()
@@ -73,7 +69,7 @@ class BeerViewModel @Inject constructor(
         }
     }
 
-    override fun loadImage(beer: Beer) {
+    override fun loadImage(position: Int, beer: Beer) {
         viewModelScope.launch {
             val beerList = withContext(Dispatchers.IO) {
                 kotlin.runCatching {
@@ -85,30 +81,29 @@ class BeerViewModel @Inject constructor(
                         )
                     } ?: defaultImage
 
-                    beerList[beer.id - 1] = BeerAdapterItem(beer, false, image)
+                    beerList[position] = BeerAdapterItem(beer, false, image)
                 }.exceptionOrNull()?.run {
                     Log.println(
                         Log.WARN, BeerViewModel::class.java.name,
                         "Error loading image for ${beer.name}: $this"
                     )
 
-                    beerList[beer.id - 1] = BeerAdapterItem(beer, false)
+                    beerList[position] = BeerAdapterItem(beer, false)
                 }
 
                 beerList
             }
 
-            beerAdapterItems.value = beerList
+            beerAdapterItems.value = beerList to beerList
         }
     }
 
     override fun onNoBeerResults() {
-        nothingMatchesVisibility.value = true
+        beerAdapterItems.value = beerAdapterItems.value!!.first to listOf()
     }
 
     override fun onBeerResults(filteredValues: List<BeerAdapterItem>) {
-        nothingMatchesVisibility.value = false
-        filteredBeerAdapterItems.value = filteredValues
+        beerAdapterItems.value = beerAdapterItems.value!!.first to filteredValues
     }
 
     override fun showDetails(beer: Beer, bitmap: Bitmap?) {

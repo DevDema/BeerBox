@@ -17,11 +17,12 @@ import kotlinx.coroutines.launch
 class BeerAdapter(
     private val context: Context,
     private val binder: BeerAdapterBinder,
-    val dataSet: MutableList<BeerAdapterItem>
+    var dataSet: List<BeerAdapterItem>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
-    private var filteredDataSet: MutableList<BeerAdapterItem> = dataSet
+    var filteredDataset: MutableList<BeerAdapterItem> = dataSet.toMutableList()
     var isContentLoading = false
+        private set
 
     class ViewHolder(val itemBinding: ItemBeerBinding) : RecyclerView.ViewHolder(itemBinding.root)
     class ViewHolderProgress(view: View) : RecyclerView.ViewHolder(view)
@@ -54,12 +55,12 @@ class BeerAdapter(
     }
 
     private fun onBindBeerViewHolder(holder: ViewHolder, position: Int) {
-        val beerAdapterItem = filteredDataSet[position]
+        val beerAdapterItem = filteredDataset[position]
         holder.itemBinding.beer = beerAdapterItem.beer
 
         holder.itemBinding.reloadButton.setOnClickListener {
             showLoading(holder)
-            binder.loadImage(beerAdapterItem.beer)
+            binder.loadImage(position, beerAdapterItem.beer)
         }
 
         holder.itemBinding.moreInfoButton.setOnClickListener {
@@ -97,19 +98,21 @@ class BeerAdapter(
     fun showContentLoading() {
         isContentLoading = true
 
-        filteredDataSet.add(dataSet.last())
-        dataSet.add(dataSet.last())
+        if (filteredDataset.isNotEmpty()) {
+            filteredDataset.add(filteredDataset.last())
+        }
 
-        notifyItemInserted(dataSet.size - 1)
+        notifyItemInserted(filteredDataset.size)
     }
 
     fun hideContentLoading() {
         isContentLoading = false
 
-        dataSet.removeLast()
-        filteredDataSet.removeLast()
+        if (filteredDataset.isNotEmpty()) {
+            filteredDataset.removeLast()
+        }
 
-        notifyItemRemoved(dataSet.size)
+        notifyItemRemoved(filteredDataset.size)
     }
 
     override fun getItemViewType(position: Int): Int =
@@ -119,7 +122,7 @@ class BeerAdapter(
             ITEM_TYPE_BEER
         }
 
-    override fun getItemCount() = filteredDataSet.size
+    override fun getItemCount() = filteredDataset.size
 
     companion object {
         const val ITEM_TYPE_PROGRESS = 1
@@ -151,25 +154,24 @@ class BeerAdapter(
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                if(filteredValues.isEmpty()) {
+                if (filteredValues.isEmpty()) {
                     CoroutineScope(Dispatchers.Main).launch { binder.onNoBeerResults() }
                 } else {
                     CoroutineScope(Dispatchers.Main).launch { binder.onBeerResults(filteredValues) }
                 }
             }
-
         }
 
     fun onFiltered(list: List<BeerAdapterItem>) {
-        val oldSize = filteredDataSet.size
-        filteredDataSet = list.toMutableList()
+        val oldSize = filteredDataset.size
+        filteredDataset = list.toMutableList()
 
-        if (oldSize > filteredDataSet.size) {
-            notifyItemRangeRemoved(filteredDataSet.size, oldSize)
-        } else if (oldSize < filteredDataSet.size) {
-            notifyItemRangeRemoved(oldSize, filteredDataSet.size)
+        if (oldSize > filteredDataset.size) {
+            notifyItemRangeRemoved(filteredDataset.size, oldSize)
+        } else if (oldSize < filteredDataset.size) {
+            notifyItemRangeInserted(oldSize, filteredDataset.size)
         }
 
-        notifyItemRangeChanged(0, filteredDataSet.size)
+        notifyItemRangeChanged(0, filteredDataset.size)
     }
 }

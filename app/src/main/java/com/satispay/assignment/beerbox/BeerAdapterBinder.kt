@@ -5,7 +5,7 @@ import com.satispay.assignment.beerbox.model.Beer
 
 interface BeerAdapterBinder {
 
-    fun loadImage(beer: Beer)
+    fun loadImage(position: Int, beer: Beer)
 
     fun showDetails(beer: Beer, bitmap: Bitmap?)
 

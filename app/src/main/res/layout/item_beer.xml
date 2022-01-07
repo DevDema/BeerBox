@@ -128,7 +128,7 @@
                 android:id="@+id/view_divider"
                 android:layout_width="0dp"
                 android:layout_height="2dp"
-                android:background="@android:color/tab_indicator_text"
+                android:background="@color/default_grey"
                 android:layout_marginVertical="@dimen/margin_small"
                 android:layout_marginStart="@dimen/margin_medium"
 
