@@ -15,7 +15,7 @@
         <!-- Customize your theme here. -->
     </style>
     <style name="BeerCardView" parent="CardView">
-        <item name="cardBackgroundColor">@color/gold</item>
+        <item name="cardBackgroundColor">?android:colorPrimary</item>
         <item name="cardCornerRadius">@dimen/card_default_corner_radius</item>
         <item name="cardElevation">@dimen/card_view_elevation</item>
     </style>

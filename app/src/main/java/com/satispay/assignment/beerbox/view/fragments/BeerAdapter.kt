@@ -1,4 +1,4 @@
-package com.satispay.assignment.beerbox
+package com.satispay.assignment.beerbox.view.fragments
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.satispay.assignment.beerbox.R
 import com.satispay.assignment.beerbox.databinding.ItemBeerBinding
 import com.satispay.assignment.beerbox.databinding.ItemProgressBinding
 import kotlinx.coroutines.CoroutineScope

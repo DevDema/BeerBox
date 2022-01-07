@@ -1,6 +1,5 @@
-package com.satispay.assignment.beerbox
+package com.satispay.assignment.beerbox.view.fragments
 
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -18,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.satispay.assignment.beerbox.R
 import com.satispay.assignment.beerbox.databinding.BeerBottomLayoutBinding
 import com.satispay.assignment.beerbox.databinding.FragmentBeerBinding
 import com.satispay.assignment.beerbox.model.Beer
@@ -103,13 +103,45 @@ class BeerFragment : Fragment() {
 
         binding.progressCircular.visibility = View.VISIBLE
         binding.recyclerViewBeer.adapter = adapter
+        binding.nothingRetryButton.setOnClickListener {
+            binding.progressCircular.visibility = View.VISIBLE
+            binding.recyclerViewBeer.visibility = View.INVISIBLE
+            binding.nothingMatchesText.visibility = View.GONE
+            binding.nothingRetryButton.visibility = View.GONE
+
+            viewModel.loadBeers()
+        }
+
+        binding.buttonToggleLayout.forEach { childView ->
+            (childView as? Button)?.setOnClickListener {
+                if (!it.isActivated) {
+                    binding.searchText.setText((it as Button).text)
+                } else {
+                    binding.searchText.setText("")
+                }
+            }
+        }
+
+        binding.scrollviewFilterButtons.isHorizontalScrollBarEnabled = false
 
         viewModel.beersAdapterItems.observe(this, { pair ->
+            if(pair.first.isEmpty()) {
+                binding.progressCircular.visibility = View.GONE
+                binding.recyclerViewBeer.visibility = View.VISIBLE
+                binding.nothingMatchesText.visibility = View.VISIBLE
+                binding.nothingRetryButton.visibility = View.VISIBLE
+
+                binding.nothingMatchesText.text = getString(R.string.request_failed_beers)
+                return@observe
+            }
+
+            binding.nothingRetryButton.visibility = View.GONE
             binding.progressCircular.visibility = View.GONE
             binding.recyclerViewBeer.visibility =
                 if (pair.second.isEmpty()) View.INVISIBLE else View.VISIBLE
             binding.nothingMatchesText.visibility =
                 if (pair.second.isEmpty()) View.VISIBLE else View.GONE
+            binding.nothingMatchesText.text = getString(R.string.no_results_label)
 
             binding.recyclerViewBeer.visibility = View.VISIBLE
 
@@ -147,18 +179,6 @@ class BeerFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
         })
-
-        binding.buttonToggleLayout.forEach { childView ->
-            (childView as? Button)?.setOnClickListener {
-                if (!it.isActivated) {
-                    binding.searchText.setText((it as Button).text)
-                } else {
-                    binding.searchText.setText("")
-                }
-            }
-        }
-
-        binding.scrollviewFilterButtons.isHorizontalScrollBarEnabled = false
     }
 
     private fun showDetails(beer: Beer, bitmap: Bitmap?, rootView: ViewGroup) {

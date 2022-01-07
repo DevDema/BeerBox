@@ -1,4 +1,4 @@
-package com.satispay.assignment.beerbox
+package com.satispay.assignment.beerbox.view.fragments
 
 import android.graphics.Bitmap
 import com.satispay.assignment.beerbox.model.Beer

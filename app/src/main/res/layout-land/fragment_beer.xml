@@ -4,7 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".BeerActivity">
+        tools:context=".view.BeerActivity">
 
     <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/beer_box_title"
@@ -200,11 +200,27 @@
             android:text="@string/no_results_label"
             android:visibility="invisible"
             tools:visibility="gone"
+            android:textAlignment="center"
             app:layout_constraintStart_toStartOf="@id/recycler_view_beer"
             app:layout_constraintEnd_toEndOf="@id/recycler_view_beer"
             app:layout_constraintTop_toTopOf="@id/recycler_view_beer"
             app:layout_constraintBottom_toBottomOf="@id/recycler_view_beer"/>
 
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/nothing_retry_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/retry_label"
+            android:visibility="invisible"
+            android:layout_marginTop="@dimen/margin_medium"
+            tools:visibility="gone"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="@id/recycler_view_beer"
+            app:layout_constraintEnd_toEndOf="@id/recycler_view_beer"
+            app:layout_constraintTop_toBottomOf="@id/nothing_matches_text"
+            app:layout_constraintBottom_toBottomOf="@id/recycler_view_beer"/>
     <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/progress_circular"
             android:layout_width="wrap_content"

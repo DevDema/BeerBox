@@ -1,4 +1,4 @@
-package com.satispay.assignment.beerbox
+package com.satispay.assignment.beerbox.view.fragments
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.satispay.assignment.beerbox.BuildConfig
 import com.satispay.assignment.beerbox.model.Beer
 import com.satispay.assignment.beerbox.network.BeerRepository
 import com.satispay.assignment.beerbox.network.ImageRepository
@@ -65,6 +66,7 @@ class BeerViewModel @Inject constructor(
             }.exceptionOrNull()?.run {
                 printStackTrace()
                 internalToastMessage.value = "Error getting beer data: $message"
+                beerAdapterItems.value = beerList to beerList
             }
         }
     }
