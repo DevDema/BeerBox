@@ -119,6 +119,8 @@ class BeerFragment : Fragment() {
                 } else {
                     binding.searchText.setText("")
                 }
+
+                binding.searchText.clearFocus()
             }
         }
 
@@ -167,17 +169,22 @@ class BeerFragment : Fragment() {
         viewModel.beerDetailed.observe(
             this,
             {
+                binding.searchText.clearFocus()
+
                 it.first?.let { beer ->
                     showDetails(beer, it.second, view as ViewGroup)
                 }
             })
 
-        viewModel.toastMessage.observe(this, {
-            Toast.makeText(
-                this@BeerFragment.requireContext().applicationContext,
-                it,
-                Toast.LENGTH_SHORT
-            ).show()
+        viewModel.toastMessage.observe(this, { string ->
+            string.takeUnless { it.isEmpty() }?.let {
+                Toast.makeText(
+                    this@BeerFragment.requireContext().applicationContext,
+                    it,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
         })
     }
 

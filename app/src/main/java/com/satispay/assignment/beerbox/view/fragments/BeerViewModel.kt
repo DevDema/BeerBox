@@ -58,6 +58,7 @@ class BeerViewModel @Inject constructor(
                     this@BeerViewModel.beerList.addAll(list)
 
                     beerAdapterItems.value = beerList to beerList
+                    internalToastMessage.value = ""
 
                     list.forEachIndexed { index, beerAdapterItem ->
                         loadImage(oldSize + index, beerAdapterItem.beer)
