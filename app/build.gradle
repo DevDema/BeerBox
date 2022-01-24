@@ -10,7 +10,7 @@ android {
     flavorDimensions "default"
 
     defaultConfig {
-        applicationId "com.satispay.assignment.beerbox"
+        applicationId "com.andreadematteis.assignments.beerbox"
         minSdk 24
         targetSdk 31
         versionCode 1

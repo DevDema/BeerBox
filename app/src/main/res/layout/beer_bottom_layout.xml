@@ -6,7 +6,7 @@
     <data>
         <variable
                 name="beer"
-                type="com.satispay.assignment.beerbox.model.Beer" />
+                type="com.andreadematteis.assignments.beerbox.model.Beer" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
