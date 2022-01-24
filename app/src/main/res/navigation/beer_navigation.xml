@@ -9,5 +9,14 @@
             android:id="@+id/beerFragment"
             android:name="com.andreadematteis.assignments.beerbox.view.fragments.BeerFragment"
             android:label="@string/beer_fragment_title"
-            tools:layout="@layout/fragment_beer"/>
+            tools:layout="@layout/fragment_beer">
+        <action
+                android:id="@+id/action_beerFragment_to_bottomSheet"
+                app:destination="@id/bottomSheet" />
+    </fragment>
+
+    <dialog
+            android:id="@+id/bottomSheet"
+            android:name="com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.MoreFilterSheetDialogFragment"
+            tools:layout="@layout/fragment_beer_filters" />
 </navigation>

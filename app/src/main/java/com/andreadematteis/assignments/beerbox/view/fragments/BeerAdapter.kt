@@ -21,6 +21,38 @@ class BeerAdapter(
     var dataSet: List<BeerAdapterItem>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
+    private val filterName = object : Filter() {
+        private var filteredValues = listOf<BeerAdapterItem>()
+
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            filteredValues = if (constraint.isNullOrBlank()) {
+                dataSet
+            } else {
+                dataSet.filter {
+                    it.beer.name
+                        .lowercase()
+                        .contains(
+                            constraint
+                                .toString()
+                                .lowercase()
+                        )
+                }
+            }
+
+            return FilterResults().apply {
+                values = filteredValues
+            }
+        }
+
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+            if (filteredValues.isEmpty()) {
+                CoroutineScope(Dispatchers.Main).launch { binder.onNoBeerResults() }
+            } else {
+                CoroutineScope(Dispatchers.Main).launch { binder.onBeerResults(filteredValues) }
+            }
+        }
+    }
+
     var filteredDataset: MutableList<BeerAdapterItem> = dataSet.toMutableList()
     var isContentLoading = false
         private set
@@ -96,26 +128,6 @@ class BeerAdapter(
         holder.itemBinding.reloadButton.visibility = View.GONE
     }
 
-    fun showContentLoading() {
-        isContentLoading = true
-
-        if (filteredDataset.isNotEmpty()) {
-            filteredDataset.add(filteredDataset.last())
-        }
-
-        notifyItemInserted(filteredDataset.size)
-    }
-
-    fun hideContentLoading() {
-        isContentLoading = false
-
-        if (filteredDataset.isNotEmpty()) {
-            filteredDataset.removeLast()
-        }
-
-        notifyItemRemoved(filteredDataset.size)
-    }
-
     override fun getItemViewType(position: Int): Int =
         if (position == itemCount - 1 && isContentLoading) {
             ITEM_TYPE_PROGRESS
@@ -130,38 +142,7 @@ class BeerAdapter(
         const val ITEM_TYPE_BEER = 0
     }
 
-    override fun getFilter(): Filter =
-        object : Filter() {
-            private var filteredValues = listOf<BeerAdapterItem>()
-
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                filteredValues = if (constraint.isNullOrBlank()) {
-                    dataSet
-                } else {
-                    dataSet.filter {
-                        it.beer.name
-                            .lowercase()
-                            .contains(
-                                constraint
-                                    .toString()
-                                    .lowercase()
-                            )
-                    }
-                }
-
-                return FilterResults().apply {
-                    values = filteredValues
-                }
-            }
-
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                if (filteredValues.isEmpty()) {
-                    CoroutineScope(Dispatchers.Main).launch { binder.onNoBeerResults() }
-                } else {
-                    CoroutineScope(Dispatchers.Main).launch { binder.onBeerResults(filteredValues) }
-                }
-            }
-        }
+    override fun getFilter(): Filter = filterName
 
     fun onFiltered(list: List<BeerAdapterItem>) {
         val oldList = filteredDataset.toList()

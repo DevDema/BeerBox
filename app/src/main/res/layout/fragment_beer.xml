@@ -48,7 +48,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
-                    android:text="@={viewModel.filterName}"
+                    android:text="@={viewModel.nameFilter}"
                     android:maxLength="25"
                     android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -59,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:text="@string/more_filters_label"
+                android:text="@string/all_filters_label"
                 android:layout_marginTop="@dimen/margin_small"
                 android:layout_marginEnd="@dimen/distance_from_screen"
                 app:layout_constraintStart_toEndOf="@id/search_text_input_layout"

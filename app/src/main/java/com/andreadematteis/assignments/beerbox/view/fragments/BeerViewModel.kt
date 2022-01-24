@@ -21,7 +21,7 @@ import javax.inject.Inject
 class BeerViewModel @Inject constructor(
     private val beerRepository: BeerRepository,
     private val imageRepository: ImageRepository
-) : FilterViewModel(), BeerAdapterBinder {
+) : ViewModel(), BeerAdapterBinder {
 
     var currentPage = 1
     lateinit var defaultImage: Bitmap

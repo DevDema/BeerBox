@@ -3,7 +3,7 @@
     <data>
         <variable
                 name="viewModel"
-                type="com.andreadematteis.assignments.beerbox.view.fragments.FilterViewModel" />
+                type="com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.FilterViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -16,7 +16,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/distance_from_screen"
                 android:layout_marginHorizontal="@dimen/distance_from_screen"
-                android:text="@string/more_filters_label"
+                android:text="@string/all_filters_label"
                 style="@style/TextAppearance.AppCompat.Title"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintTop_toTopOf="parent"
@@ -24,7 +24,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/search_text_input_layout" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/by_brewing_time_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -63,14 +63,13 @@
                     android:id="@+id/brewing_time_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@={viewModel.timeframePicker}"
                     android:maxLength="25"
                     android:maxLines="1"
                     android:singleLine="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/filter_by_name_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -106,13 +105,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
-                    android:text="@={viewModel.filterName}"
+                    android:text="@={viewModel.nameFilter}"
 
                     android:maxLength="25"
                     android:maxLines="1"
                     android:singleLine="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/reset_label"
+                android:text="@string/reset_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/distance_from_screen"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/cancel_label"
+                app:layout_constraintTop_toTopOf="@id/filter_label"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toBottomOf="@id/filter_label" />
 
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/cancel_label"
@@ -136,6 +149,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/distance_from_screen"
                 android:layout_marginBottom="@dimen/distance_from_screen"
+                android:enabled="false"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_marginTop="@dimen/margin_very_lorge"
                 app:layout_constraintHorizontal_chainStyle="packed"
