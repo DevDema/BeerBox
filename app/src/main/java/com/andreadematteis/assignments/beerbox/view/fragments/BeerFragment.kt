@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
@@ -20,11 +21,16 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.andreadematteis.assignments.beerbox.R
 import com.andreadematteis.assignments.beerbox.databinding.BeerBottomLayoutBinding
 import com.andreadematteis.assignments.beerbox.databinding.FragmentBeerBinding
+import com.andreadematteis.assignments.beerbox.databinding.FragmentBeerFiltersBinding
 import com.andreadematteis.assignments.beerbox.model.Beer
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointBackward
+import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 @AndroidEntryPoint
 class BeerFragment : Fragment() {
@@ -125,8 +131,8 @@ class BeerFragment : Fragment() {
 
         binding.scrollviewFilterButtons.isHorizontalScrollBarEnabled = false
 
-        viewModel.beersAdapterItems.observe(this, { pair ->
-            if(pair.first.isEmpty()) {
+        viewModel.beersAdapterItems.observe(viewLifecycleOwner, { pair ->
+            if (pair.first.isEmpty()) {
                 binding.progressCircular.visibility = View.GONE
                 binding.recyclerViewBeer.visibility = View.VISIBLE
                 binding.nothingMatchesText.visibility = View.VISIBLE
@@ -157,7 +163,7 @@ class BeerFragment : Fragment() {
 
             binding.recyclerViewBeer.removeOnScrollListener(recyclerViewScrollListener)
 
-            if(pair.first.size == pair.second.size) {
+            if (pair.first.size == pair.second.size) {
                 binding.recyclerViewBeer.addOnScrollListener(recyclerViewScrollListener)
             }
         })
@@ -172,7 +178,7 @@ class BeerFragment : Fragment() {
                 }
             })
 
-        viewModel.toastMessage.observe(this, { string ->
+        viewModel.toastMessage.observe(viewLifecycleOwner, { string ->
             string.takeUnless { it.isEmpty() }?.let {
                 Toast.makeText(
                     this@BeerFragment.requireContext().applicationContext,
@@ -182,13 +188,38 @@ class BeerFragment : Fragment() {
             }
 
         })
+
+        viewModel.moreFiltersOpened.observe(viewLifecycleOwner) {
+            if(it) {
+                openMoreFiltersDialog(binding.root)
+            } else {
+                currentBottomSheet?.cancel()
+            }
+        }
+
+        binding.moreFilters.setOnClickListener {
+            viewModel.setMoreFiltersOpened(true)
+        }
     }
+
+    private fun openMoreFiltersDialog(rootView: ViewGroup) {
+        currentBottomSheet = MoreFilterSheetDialog(
+            requireActivity(),
+            viewModel,
+            layoutInflater,
+            rootView,
+            false
+        ).also {
+            it.show()
+        }
+    }
+
+
 
     private fun showDetails(beer: Beer, bitmap: Bitmap?, rootView: ViewGroup) {
         val binding = BeerBottomLayoutBinding.inflate(layoutInflater, rootView, false)
 
-        currentBottomSheet = BottomSheetDialog(requireContext())
-        currentBottomSheet?.apply {
+        currentBottomSheet = BottomSheetDialog(requireContext()).apply {
             setContentView(binding.root)
             setOnCancelListener {
                 currentBottomSheet = null
@@ -196,7 +227,9 @@ class BeerFragment : Fragment() {
             }
             binding.beer = beer
             binding.image.setImageBitmap(bitmap)
-        }?.show()
+        }.also {
+            it.show()
+        }
     }
 
     private fun clearAllActivatedTogglesExcept(exceptView: View?) {

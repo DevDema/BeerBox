@@ -13,4 +13,14 @@
     <string name="no_results_label">Seems like no beer matches your search!</string>
     <string name="retry_label">Retry</string>
     <string name="request_failed_beers">Cannot load the list of beers.\nCheck your internet connection first!</string>
+    <string name="more_filters_label">More filters</string>
+    <string name="name_label">Name</string>
+    <string name="filter_by_name">Beer name</string>
+    <string name="by_name_label">By Name:</string>
+    <string name="by_brewing_time_frame_label">By brewing timeframe:</string>
+    <string name="timeframe_label">dd/MM/yyyy - dd/MM/yyyy</string>
+    <string name="filter_label">Filter</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="select_brewing_timeframe_label">Select brewing timeframe</string>
+    <string name="two_strings_trattino_spaced">%s - %s</string>
 </resources>

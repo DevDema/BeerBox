@@ -3,6 +3,7 @@
     <dimen name="distance_from_screen">20dp</dimen>
     <dimen name="title_text_size">30sp</dimen>
     <dimen name="margin_medium">15dp</dimen>
+    <dimen name="margin_very_lorge">60dp</dimen>
     <dimen name="margin_small">10dp</dimen>
     <dimen name="card_default_corner_radius">15dp</dimen>
     <dimen name="card_view_elevation">20dp</dimen>
@@ -15,4 +16,7 @@
     <dimen name="max_beer_image_width">90dp</dimen>
     <dimen name="beer_image_height">195dp</dimen>
     <dimen name="max_beer_image_height">292dp</dimen>
+    <dimen name="max_length_name_filter">250dp</dimen>
+    <dimen name="max_length_timeframe_filter">280dp</dimen>
+    <dimen name="max_length_brewing_timeframe_label">100dp</dimen>
 </resources>

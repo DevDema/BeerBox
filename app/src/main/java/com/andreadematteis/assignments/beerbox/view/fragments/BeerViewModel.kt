@@ -21,7 +21,7 @@ import javax.inject.Inject
 class BeerViewModel @Inject constructor(
     private val beerRepository: BeerRepository,
     private val imageRepository: ImageRepository
-) : ViewModel(), BeerAdapterBinder {
+) : FilterViewModel(), BeerAdapterBinder {
 
     var currentPage = 1
     lateinit var defaultImage: Bitmap
@@ -37,6 +37,7 @@ class BeerViewModel @Inject constructor(
         get() = internalToastMessage
     val beerDetailed: LiveData<Pair<Beer?, Bitmap?>>
         get() = internalBeerDetailed
+
 
     fun loadBeers() {
         if (beersAdapterItems.value?.first.isNullOrEmpty()) {

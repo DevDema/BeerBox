@@ -34,15 +34,32 @@
             app:layout_constraintVertical_bias="0"
             app:layout_constraintTop_toBottomOf="@id/beer_box_title"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline"
+            app:layout_constraintEnd_toStartOf="@id/more_filters"
             app:layout_constraintBottom_toTopOf="@id/gift_box_card_view">
 
         <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/search_text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLength="25"
+                android:maxLines="1"
+                android:singleLine="true"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+            android:id="@+id/more_filters"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:text="@string/more_filters_label"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginEnd="@dimen/distance_from_screen"
+            app:layout_constraintStart_toEndOf="@id/search_text_input_layout"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="@id/search_text_input_layout"
+            app:layout_constraintBottom_toBottomOf="@id/search_text_input_layout"/>
 
     <androidx.cardview.widget.CardView
             android:id="@+id/gift_box_card_view"
