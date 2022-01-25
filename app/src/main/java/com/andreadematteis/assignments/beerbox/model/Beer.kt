@@ -1,9 +1,12 @@
 package com.andreadematteis.assignments.beerbox.model
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import com.google.gson.annotations.Expose
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Beer(
     @SerializedName("abv")
     @Expose
@@ -11,9 +14,6 @@ data class Beer(
     @SerializedName("attenuation_level")
     @Expose
     val attenuationLevel: Double,
-    @SerializedName("boil_volume")
-    @Expose
-    val boilVolume: BoilVolume,
     @SerializedName("brewers_tips")
     @Expose
     val brewersTips: String,
@@ -41,12 +41,6 @@ data class Beer(
     @SerializedName("image_url")
     @Expose
     val imageUrl: String?,
-    @SerializedName("ingredients")
-    @Expose
-    val ingredients: Ingredients,
-    @SerializedName("method")
-    @Expose
-    val method: Method,
     @SerializedName("name")
     @Expose
     val name: String,
@@ -64,8 +58,5 @@ data class Beer(
     val targetFg: Int,
     @SerializedName("target_og")
     @Expose
-    val targetOg: Double,
-    @SerializedName("volume")
-    @Expose
-    val volume: Volume
-)
+    val targetOg: Double
+): Parcelable

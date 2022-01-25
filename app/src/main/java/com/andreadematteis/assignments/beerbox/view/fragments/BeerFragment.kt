@@ -17,9 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.andreadematteis.assignments.beerbox.R
-import com.andreadematteis.assignments.beerbox.databinding.BeerBottomLayoutBinding
 import com.andreadematteis.assignments.beerbox.databinding.FragmentBeerBinding
 import com.andreadematteis.assignments.beerbox.model.Beer
 import com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.FilterType
@@ -36,7 +34,6 @@ class BeerFragment : Fragment() {
     private val viewModel: BeerViewModel by viewModels()
     private lateinit var binding: FragmentBeerBinding
     private lateinit var adapter: BeerAdapter
-    private var currentBottomSheet: BottomSheetDialog? = null
     private val recyclerViewScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
@@ -177,7 +174,7 @@ class BeerFragment : Fragment() {
                 binding.searchText.clearFocus()
 
                 it.first?.let { beer ->
-                    showDetails(beer, it.second, view as ViewGroup)
+                    showDetails(beer, it.second)
                 }
             })
 
@@ -241,20 +238,14 @@ class BeerFragment : Fragment() {
     }
 
 
-    private fun showDetails(beer: Beer, bitmap: Bitmap?, rootView: ViewGroup) {
-        val binding = BeerBottomLayoutBinding.inflate(layoutInflater, rootView, false)
-
-        currentBottomSheet = BottomSheetDialog(requireContext()).apply {
-            setContentView(binding.root)
-            setOnCancelListener {
-                currentBottomSheet = null
-                viewModel.hideDetails()
-            }
-            binding.beer = beer
-            binding.image.setImageBitmap(bitmap)
-        }.also {
-            it.show()
-        }
+    private fun showDetails(beer: Beer, bitmap: Bitmap?) {
+        findNavController().navigate(
+            BeerFragmentDirections
+                .actionBeerFragmentToBottomSheetBeers(
+                    beer,
+                    bitmap ?: BitmapFactory.decodeResource(resources, R.mipmap.ic_missing_image)
+                )
+        )
     }
 
     private fun clearAllActivatedTogglesExcept(exceptView: View?) {
@@ -263,11 +254,5 @@ class BeerFragment : Fragment() {
                 (it as? Button)?.isActivated = false
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        currentBottomSheet?.cancel()
     }
 }
