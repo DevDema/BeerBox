@@ -19,6 +19,7 @@ import java.util.*
 
 class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
 
+    private var isPickerOpening = false
     private val viewModel: FilterViewModel by activityViewModels()
     private lateinit var binding: FragmentBeerFiltersBinding
     private val args: MoreFilterSheetDialogFragmentArgs by navArgs()
@@ -40,7 +41,12 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
 
         binding.brewingTimeText.inputType = InputType.TYPE_NULL
         binding.brewingTimeText.keyListener = null
-        binding.brewingTimeText.setOnClickListener { openDatePicker() }
+        binding.brewingTimeTextInputLayout.setStartIconOnClickListener {
+            if(!isPickerOpening) {
+                isPickerOpening = true
+                openDatePicker()
+            }
+        }
         binding.cancelLabel.setOnClickListener {
             dismiss()
         }
@@ -173,7 +179,16 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
                         dateFormat.format(startDate),
                         dateFormat.format(endDate)
                     )
+
+                    isPickerOpening = false
                 }
+
+                addOnCancelListener {
+                    isPickerOpening = false
+                }
+
+                addOnDismissListener { isPickerOpening = false }
+                addOnNegativeButtonClickListener { isPickerOpening = false }
             }
 
         dateRange.show(parentFragmentManager, TAG_DATE_PICKER)
