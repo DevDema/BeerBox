@@ -209,14 +209,18 @@ class BeerFragment : Fragment() {
         when (filterPair.first) {
             FilterType.NONE -> {
                 binding.searchText.setText("")
+                binding.searchTextInputLayout.isEnabled = true
             }
 
             FilterType.NAME -> {
                 binding.searchText.setText(filterPair.second)
+                binding.searchTextInputLayout.isEnabled = true
+
             }
 
             FilterType.TIMEFRAME -> {
                 binding.searchText.setText("")
+                binding.searchTextInputLayout.isEnabled = false
                 binding.moreFilters.text = getString(R.string.all_filters_number_label, 1)
 
                 adapter.filterType = FilterType.TIMEFRAME

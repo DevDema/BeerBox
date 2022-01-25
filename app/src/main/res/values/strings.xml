@@ -25,4 +25,5 @@
     <string name="select_brewing_timeframe_label">Select brewing timeframe</string>
     <string name="two_strings_trattino_spaced">%s - %s</string>
     <string name="reset_label">Reset</string>
+    <string name="first_brewing_date_semi_colon">First Brewing Date:</string>
 </resources>
