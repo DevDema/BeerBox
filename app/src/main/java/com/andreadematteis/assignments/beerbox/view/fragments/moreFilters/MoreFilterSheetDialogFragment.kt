@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.andreadematteis.assignments.beerbox.R
 import com.andreadematteis.assignments.beerbox.databinding.FragmentBeerFiltersBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -19,6 +21,8 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
 
     private val viewModel: FilterViewModel by activityViewModels()
     private lateinit var binding: FragmentBeerFiltersBinding
+    private val args: MoreFilterSheetDialogFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,10 +46,43 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
         }
 
         binding.filterLabel.setOnClickListener {
+            binding.searchText.text.toString().let {
+                if (it.isNotEmpty()) {
+                    findNavController()
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(
+                            SAVED_STATE_HANDLE_FILTER,
+                            FilterType.NAME to it
+                        )
+                }
+            }
+
+            binding.brewingTimeText.text.toString().let {
+                if (it.isNotEmpty()) {
+                    findNavController()
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(
+                            SAVED_STATE_HANDLE_FILTER,
+                            FilterType.TIMEFRAME to it
+                        )
+                }
+            }
+
             dismiss()
         }
 
         binding.resetLabel.setOnClickListener {
+            findNavController()
+                .previousBackStackEntry
+                ?.savedStateHandle
+                ?.set(
+                    SAVED_STATE_HANDLE_FILTER,
+                    FilterType.NONE to ""
+                )
+
+            viewModel.forceClear()
             dismiss()
         }
 
@@ -53,7 +90,7 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
             binding.searchTextInputLayout.isEnabled = isChecked
             binding.searchText.isEnabled = isChecked
 
-            if(isChecked) {
+            if (isChecked) {
                 binding.byBrewingTimeLabel.isChecked = false
             } else {
                 binding.searchText.setText("")
@@ -64,7 +101,7 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
             binding.brewingTimeTextInputLayout.isEnabled = isChecked
             binding.brewingTimeText.isEnabled = isChecked
 
-            if(isChecked) {
+            if (isChecked) {
                 binding.filterByNameLabel.isChecked = false
             } else {
                 binding.brewingTimeText.setText("")
@@ -78,23 +115,32 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
         binding.searchText.isEnabled = false
 
         viewModel.datesFilter.observe(viewLifecycleOwner) {
-            if(!it.isNullOrEmpty()) {
+            if (!it.isNullOrEmpty()) {
                 binding.byBrewingTimeLabel.isChecked = true
                 binding.brewingTimeText.setText(it)
-                binding.filterLabel.isEnabled = binding.byBrewingTimeLabel.isChecked
+
+                binding.filterLabel.isEnabled =
+                    binding.byBrewingTimeLabel.isChecked
             } else {
                 binding.filterLabel.isEnabled = false
             }
         }
 
         viewModel.nameFilter.observe(viewLifecycleOwner) {
-            if(!it.isNullOrEmpty()) {
+            if (!it.isNullOrEmpty()) {
                 binding.filterByNameLabel.isChecked = true
-                binding.filterLabel.isEnabled = binding.filterByNameLabel.isChecked
+                binding.filterLabel.isEnabled =
+                    binding.filterByNameLabel.isChecked && it.length > 3
             } else {
                 binding.filterLabel.isEnabled = false
             }
         }
+
+        if(args.nameFilter.isNotEmpty()) {
+            viewModel.forceClear()
+        }
+
+        viewModel.setFilterName(args.nameFilter)
     }
 
     private fun openDatePicker() {
@@ -135,9 +181,6 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
         private const val TAG_DATE_PICKER = "DATE_PICKER_BREWING"
-
-        fun newInstance() = MoreFilterSheetDialogFragment().apply {
-            arguments = Bundle()
-        }
+        const val SAVED_STATE_HANDLE_FILTER = "SAVED_STATE_HANDLE_FILTER"
     }
 }

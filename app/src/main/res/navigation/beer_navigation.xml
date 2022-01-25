@@ -18,5 +18,10 @@
     <dialog
             android:id="@+id/bottomSheet"
             android:name="com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.MoreFilterSheetDialogFragment"
-            tools:layout="@layout/fragment_beer_filters" />
+            tools:layout="@layout/fragment_beer_filters" >
+        <argument
+                android:name="nameFilter"
+                app:argType="string"
+                android:defaultValue='' />
+    </dialog>
 </navigation>

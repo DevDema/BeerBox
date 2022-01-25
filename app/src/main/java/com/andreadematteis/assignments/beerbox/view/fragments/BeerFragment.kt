@@ -10,10 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.core.view.children
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -21,7 +23,9 @@ import com.andreadematteis.assignments.beerbox.R
 import com.andreadematteis.assignments.beerbox.databinding.BeerBottomLayoutBinding
 import com.andreadematteis.assignments.beerbox.databinding.FragmentBeerBinding
 import com.andreadematteis.assignments.beerbox.model.Beer
+import com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.FilterType
 import com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.MoreFilterSheetDialogFragment
+import com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.MoreFilterSheetDialogFragment.Companion.SAVED_STATE_HANDLE_FILTER
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +35,7 @@ import java.util.*
 @AndroidEntryPoint
 class BeerFragment : Fragment() {
 
-    private val viewModel: BeerViewModel by activityViewModels()
+    private val viewModel: BeerViewModel by viewModels()
     private lateinit var binding: FragmentBeerBinding
     private lateinit var adapter: BeerAdapter
     private var currentBottomSheet: BottomSheetDialog? = null
@@ -58,7 +62,11 @@ class BeerFragment : Fragment() {
         }
 
         override fun afterTextChanged(s: Editable?) {
-            if (s.isNullOrBlank() || s.length > 3) {
+            if (s.isNullOrBlank()) {
+                binding.moreFilters.text = getString(R.string.all_filters_label)
+                adapter.filter.filter(s)
+            } else if(s.length > 3) {
+                binding.moreFilters.text = getString(R.string.all_filters_number_label, 1)
                 adapter.filter.filter(s)
             }
         }
@@ -187,14 +195,38 @@ class BeerFragment : Fragment() {
         binding.moreFilters.setOnClickListener {
             openMoreFiltersDialog()
         }
+
+        // Listen to events from bottom fragment destination
+
+        findNavController().currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Pair<FilterType, String>>(SAVED_STATE_HANDLE_FILTER)
+            ?.observe(viewLifecycleOwner) { filterPair ->
+                handleAllFiltersFeedback(filterPair)
+            }
+    }
+
+    private fun handleAllFiltersFeedback(filterPair: Pair<FilterType, String>) {
+        when(filterPair.first) {
+            FilterType.NONE ->{
+                binding.searchText.setText("")
+            }
+
+            FilterType.NAME -> {
+                binding.searchText.setText(filterPair.second)
+            }
+
+            FilterType.TIMEFRAME -> {
+
+            }
+        }
     }
 
     private fun openMoreFiltersDialog() {
-        MoreFilterSheetDialogFragment
-            .newInstance()
-            .also {
-                it.show(parentFragmentManager, MoreFilterSheetDialogFragment::class.java.simpleName)
-            }
+        findNavController().navigate(
+            BeerFragmentDirections
+                .actionBeerFragmentToBottomSheet(binding.searchText.text.toString())
+        )
     }
 
 

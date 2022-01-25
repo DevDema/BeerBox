@@ -14,6 +14,7 @@
     <string name="retry_label">Retry</string>
     <string name="request_failed_beers">Cannot load the list of beers.\nCheck your internet connection first!</string>
     <string name="all_filters_label">All filters</string>
+    <string name="all_filters_number_label">All filters (%d)</string>
     <string name="name_label">Name</string>
     <string name="filter_by_name">Beer name</string>
     <string name="by_name_label">By Name:</string>
