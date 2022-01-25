@@ -18,6 +18,6 @@
     <dimen name="max_beer_image_height">292dp</dimen>
     <dimen name="max_length_name_filter">250dp</dimen>
     <dimen name="max_length_timeframe_filter">280dp</dimen>
-    <dimen name="max_length_brewing_timeframe_label">120dp</dimen>
+    <dimen name="max_length_brewing_timeframe_label">140dp</dimen>
     <dimen name="all_filters_size">150dp</dimen>
 </resources>

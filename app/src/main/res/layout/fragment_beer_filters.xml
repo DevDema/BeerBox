@@ -33,7 +33,7 @@
                 style="@style/TextAppearance.AppCompat.Medium"
 
                 app:layout_constraintWidth_max="@dimen/max_length_brewing_timeframe_label"
-                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintTop_toTopOf="@id/brewing_time_text_input_layout"
                 app:layout_constraintStart_toStartOf="parent"
@@ -49,8 +49,7 @@
                 android:layout_marginEnd="@dimen/distance_from_screen"
                 android:layout_marginTop="@dimen/margin_medium"
 
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:startIconDrawable="@drawable/ic_baseline_date_range_24"
                 app:layout_constraintVertical_bias="0"
                 app:layout_constraintTop_toBottomOf="@id/search_text_input_layout"
