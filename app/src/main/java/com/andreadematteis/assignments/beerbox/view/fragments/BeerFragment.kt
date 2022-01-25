@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.annotation.VisibleForTesting
 import androidx.core.view.children
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
@@ -33,7 +34,8 @@ class BeerFragment : Fragment() {
 
     private val viewModel: BeerViewModel by viewModels()
     private lateinit var binding: FragmentBeerBinding
-    private lateinit var adapter: BeerAdapter
+    @VisibleForTesting
+    lateinit var adapter: BeerAdapter
     private val recyclerViewScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
@@ -106,6 +108,7 @@ class BeerFragment : Fragment() {
             emptyList<BeerAdapterItem>().toMutableList()
         )
 
+        binding.searchText.clearFocus()
         binding.progressCircular.visibility = View.VISIBLE
         binding.recyclerViewBeer.adapter = adapter
         binding.nothingRetryButton.setOnClickListener {
