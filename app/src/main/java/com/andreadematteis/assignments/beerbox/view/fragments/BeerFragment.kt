@@ -192,6 +192,7 @@ class BeerFragment : Fragment() {
         })
 
         binding.moreFilters.setOnClickListener {
+            binding.searchText.clearFocus()
             openMoreFiltersDialog()
         }
 
