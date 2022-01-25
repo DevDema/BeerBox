@@ -10,10 +10,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.andreadematteis.assignments.beerbox.R
 import com.andreadematteis.assignments.beerbox.databinding.ItemBeerBinding
-import com.andreadematteis.assignments.beerbox.databinding.ItemProgressBinding
+import com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.FilterType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class BeerAdapter(
     private val context: Context,
@@ -21,28 +23,54 @@ class BeerAdapter(
     var dataSet: List<BeerAdapterItem>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
+    var filterType: FilterType = FilterType.NONE
     private val filterName = object : Filter() {
         private var filteredValues = listOf<BeerAdapterItem>()
 
         override fun performFiltering(constraint: CharSequence?): FilterResults {
-            filteredValues = if (constraint.isNullOrBlank()) {
-                dataSet
-            } else {
-                dataSet.filter {
-                    it.beer.name
-                        .lowercase()
-                        .contains(
-                            constraint
-                                .toString()
-                                .lowercase()
-                        )
-                }
+            if (constraint.isNullOrBlank()) {
+                filterType = FilterType.NONE
+            }
+
+            filteredValues = when (filterType) {
+                FilterType.NAME -> performFilteringName(constraint!!)
+                FilterType.TIMEFRAME -> performFilteringTimeframe(constraint!!)
+                FilterType.NONE -> dataSet
             }
 
             return FilterResults().apply {
                 values = filteredValues
             }
         }
+
+        private fun performFilteringTimeframe(constraint: CharSequence): List<BeerAdapterItem> {
+            val (startDateString, endDateString) = constraint
+                .toString()
+                .replace(" ", "")
+                .split("-")
+
+            val startDate = SimpleDateFormat("dd/MM/yyyy", Locale.ITALY).parse(startDateString)
+            val endDate = SimpleDateFormat("dd/MM/yyyy", Locale.ITALY).parse(endDateString)
+
+            return dataSet.filter { beerAdapterItem ->
+                SimpleDateFormat("MM/yyyy", Locale.ITALY)
+                    .parse(beerAdapterItem.beer.firstBrewed)
+                    ?.let {
+                        it.before(endDate) && it.after(startDate)
+                    } ?: false
+            }
+        }
+
+        private fun performFilteringName(constraint: CharSequence): List<BeerAdapterItem> =
+            dataSet.filter {
+                it.beer.name
+                    .lowercase()
+                    .contains(
+                        constraint
+                            .toString()
+                            .lowercase()
+                    )
+            }
 
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
             if (filteredValues.isEmpty()) {
@@ -54,37 +82,22 @@ class BeerAdapter(
     }
 
     var filteredDataset: MutableList<BeerAdapterItem> = dataSet.toMutableList()
-    var isContentLoading = false
-        private set
 
     class ViewHolder(val itemBinding: ItemBeerBinding) : RecyclerView.ViewHolder(itemBinding.root)
-    class ViewHolderProgress(view: View) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
-        when (viewType) {
-            ITEM_TYPE_BEER -> ViewHolder(
-                DataBindingUtil.inflate(
-                    LayoutInflater.from(parent.context),
-                    R.layout.item_beer,
-                    parent,
-                    false
-                )
+        ViewHolder(
+            DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                R.layout.item_beer,
+                parent,
+                false
             )
-            ITEM_TYPE_PROGRESS -> ViewHolderProgress(
-                ItemProgressBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                ).root
-            )
-            else -> error("Invalid view type")
-        }
+        )
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder.itemViewType) {
-            ITEM_TYPE_BEER -> onBindBeerViewHolder(holder as ViewHolder, position)
-            ITEM_TYPE_PROGRESS -> return
-        }
+        onBindBeerViewHolder(holder as ViewHolder, position)
+
     }
 
     private fun onBindBeerViewHolder(holder: ViewHolder, position: Int) {
@@ -128,19 +141,7 @@ class BeerAdapter(
         holder.itemBinding.reloadButton.visibility = View.GONE
     }
 
-    override fun getItemViewType(position: Int): Int =
-        if (position == itemCount - 1 && isContentLoading) {
-            ITEM_TYPE_PROGRESS
-        } else {
-            ITEM_TYPE_BEER
-        }
-
     override fun getItemCount() = filteredDataset.size
-
-    companion object {
-        const val ITEM_TYPE_PROGRESS = 1
-        const val ITEM_TYPE_BEER = 0
-    }
 
     override fun getFilter(): Filter = filterName
 

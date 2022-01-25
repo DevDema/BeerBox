@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.core.view.children
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
@@ -24,7 +23,6 @@ import com.andreadematteis.assignments.beerbox.databinding.BeerBottomLayoutBindi
 import com.andreadematteis.assignments.beerbox.databinding.FragmentBeerBinding
 import com.andreadematteis.assignments.beerbox.model.Beer
 import com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.FilterType
-import com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.MoreFilterSheetDialogFragment
 import com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.MoreFilterSheetDialogFragment.Companion.SAVED_STATE_HANDLE_FILTER
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -43,10 +41,7 @@ class BeerFragment : Fragment() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
 
-            if (!recyclerView.canScrollVertically(1) &&
-                !adapter.isContentLoading
-            ) {
-
+            if (!recyclerView.canScrollVertically(1)) {
                 CoroutineScope(Dispatchers.Main).launch {
                     viewModel.loadNextPage()
                 }
@@ -64,9 +59,13 @@ class BeerFragment : Fragment() {
         override fun afterTextChanged(s: Editable?) {
             if (s.isNullOrBlank()) {
                 binding.moreFilters.text = getString(R.string.all_filters_label)
+
+                adapter.filterType = FilterType.NAME
                 adapter.filter.filter(s)
-            } else if(s.length > 3) {
+            } else if (s.length > 3) {
                 binding.moreFilters.text = getString(R.string.all_filters_number_label, 1)
+
+                adapter.filterType = FilterType.NAME
                 adapter.filter.filter(s)
             }
         }
@@ -206,9 +205,9 @@ class BeerFragment : Fragment() {
             }
     }
 
-    private fun handleAllFiltersFeedback(filterPair: Pair<FilterType, String>) {
-        when(filterPair.first) {
-            FilterType.NONE ->{
+    private fun handleAllFiltersFeedback(filterPair: Pair<FilterType, String>) =
+        when (filterPair.first) {
+            FilterType.NONE -> {
                 binding.searchText.setText("")
             }
 
@@ -217,10 +216,13 @@ class BeerFragment : Fragment() {
             }
 
             FilterType.TIMEFRAME -> {
+                binding.searchText.setText("")
+                binding.moreFilters.text = getString(R.string.all_filters_number_label, 1)
 
+                adapter.filterType = FilterType.TIMEFRAME
+                adapter.filter.filter(filterPair.second)
             }
         }
-    }
 
     private fun openMoreFiltersDialog() {
         findNavController().navigate(
