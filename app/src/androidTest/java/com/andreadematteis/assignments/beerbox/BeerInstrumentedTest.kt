@@ -1,12 +1,8 @@
 package com.andreadematteis.assignments.beerbox
 
-import android.content.Context
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.NoMatchingViewException
-import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
@@ -15,6 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.uiautomator.UiDevice
+import com.andreadematteis.assignments.beerbox.BeerBoxTestsAssertion.RecyclerViewItemCountAssertion
 import com.andreadematteis.assignments.beerbox.BeerBoxTestsMatchers.atPositionOnView
 import com.andreadematteis.assignments.beerbox.BeerBoxTestsMatchers.withDrawable
 import com.andreadematteis.assignments.beerbox.model.Beer
@@ -25,14 +22,12 @@ import com.andreadematteis.assignments.beerbox.view.BeerActivity
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import okhttp3.MediaType
 import okhttp3.ResponseBody
-import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers.*
 import org.junit.Before
 import org.junit.Rule
@@ -83,10 +78,7 @@ class BeerInstrumentedTest {
             }
     }
 
-    class FakeImageRepository @Inject constructor(
-        service: ImageService,
-        @ApplicationContext private val context: Context
-    ) :
+    class FakeImageRepository @Inject constructor(service: ImageService) :
         ImageRepository(service) {
         override suspend fun getImage(imageStringUrl: String): ResponseBody =
             when (imageStringUrl) {
@@ -94,7 +86,6 @@ class BeerInstrumentedTest {
                 else -> ResponseBody.create(MediaType.get("image/bmp"), "")
             }
     }
-
 
     @Module
     @InstallIn(SingletonComponent::class)
@@ -113,7 +104,6 @@ class BeerInstrumentedTest {
     fun setup() {
         mActivityScenario = ActivityScenario.launch(BeerActivity::class.java)
         hiltRule.inject()
-
     }
 
     @Test
@@ -543,29 +533,6 @@ class BeerInstrumentedTest {
                 )
             )
         )
-    }
-
-    private class RecyclerViewItemCountAssertion(private val count: Int) : ViewAssertion {
-
-        override fun check(view: View, noViewFoundException: NoMatchingViewException?) {
-            if (noViewFoundException != null) {
-                throw noViewFoundException
-            }
-
-            if (view !is RecyclerView) {
-                throw IllegalStateException("The asserted view is not RecyclerView")
-            }
-
-            if (view.adapter == null) {
-                throw IllegalStateException("No adapter is assigned to RecyclerView")
-            }
-
-            assertThat(
-                "RecyclerView item count",
-                view.adapter!!.itemCount,
-                CoreMatchers.equalTo(count)
-            )
-        }
     }
 
     companion object {
