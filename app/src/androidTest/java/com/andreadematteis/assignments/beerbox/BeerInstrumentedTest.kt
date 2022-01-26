@@ -63,14 +63,14 @@ class BeerInstrumentedTest {
                 }
                 page > 1 -> {
                     mutableListOf<Beer>().apply {
-                        repeat(20) {
+                        repeat(PAGINATION_ITEMS) {
                             add(getBeerPlaceHolder(it + MANDATORY_BEERS.size))
                         }
                     }
                 }
                 else -> {
                     MANDATORY_BEERS + mutableListOf<Beer>().apply {
-                        repeat(20 - MANDATORY_BEERS.size) {
+                        repeat(PAGINATION_ITEMS - MANDATORY_BEERS.size) {
                             add(getBeerPlaceHolder(it + MANDATORY_BEERS.size))
                         }
                     }
@@ -162,7 +162,7 @@ class BeerInstrumentedTest {
     @Test
     fun testRotateScreenKeepsBeers() {
         onView(withId(R.id.recycler_view_beer)).check(
-            RecyclerViewItemCountAssertion(20)
+            RecyclerViewItemCountAssertion(PAGINATION_ITEMS)
         )
 
         val device = UiDevice.getInstance(getInstrumentation())
@@ -171,14 +171,14 @@ class BeerInstrumentedTest {
 
         Thread.sleep(2000)
         onView(withId(R.id.recycler_view_beer)).check(
-            RecyclerViewItemCountAssertion(20)
+            RecyclerViewItemCountAssertion(PAGINATION_ITEMS)
         )
 
         device.setOrientationRight()
 
         Thread.sleep(2000)
         onView(withId(R.id.recycler_view_beer)).check(
-            RecyclerViewItemCountAssertion(20)
+            RecyclerViewItemCountAssertion(PAGINATION_ITEMS)
         )
     }
 
@@ -243,7 +243,7 @@ class BeerInstrumentedTest {
     @Test
     fun filterByTimeframeAndReset() {
         onView(withId(R.id.recycler_view_beer)).check(
-            RecyclerViewItemCountAssertion(20)
+            RecyclerViewItemCountAssertion(PAGINATION_ITEMS)
         )
 
         onView(withId(R.id.nothing_matches_text)).check(matches(not(isDisplayed())))
@@ -279,7 +279,7 @@ class BeerInstrumentedTest {
         onView(withId(R.id.more_filters)).check(matches(withText("All filters")))
 
         onView(withId(R.id.recycler_view_beer)).check(
-            RecyclerViewItemCountAssertion(20)
+            RecyclerViewItemCountAssertion(PAGINATION_ITEMS)
         )
 
         onView(withId(R.id.nothing_matches_text)).check(matches(not(isDisplayed())))
@@ -482,7 +482,7 @@ class BeerInstrumentedTest {
         repeat(BEERS_PAGES - 1) {
             onView(withId(R.id.recycler_view_beer)).perform(
                 scrollToPosition<RecyclerView.ViewHolder>(
-                    ((it + 1) * 20) - 1
+                    ((it + 1) * PAGINATION_ITEMS) - 1
                 )
             )
 
@@ -490,18 +490,18 @@ class BeerInstrumentedTest {
 
             onView(withId(R.id.recycler_view_beer)).check(
                 RecyclerViewItemCountAssertion(
-                    (it + 2) * 20
+                    (it + 2) * PAGINATION_ITEMS
                 )
             )
         }
 
         onView(withId(R.id.recycler_view_beer)).perform(
             scrollToPosition<RecyclerView.ViewHolder>(
-                (BEERS_PAGES - 1 * 20) - 1
+                (BEERS_PAGES - 1 * PAGINATION_ITEMS) - 1
             )
         )
 
-        onView(withId(R.id.recycler_view_beer)).check(RecyclerViewItemCountAssertion(BEERS_PAGES * 20))
+        onView(withId(R.id.recycler_view_beer)).check(RecyclerViewItemCountAssertion(BEERS_PAGES * PAGINATION_ITEMS))
 
     }
 
@@ -539,7 +539,7 @@ class BeerInstrumentedTest {
         private const val BEERS_PAGES = 10
         private const val NO_IMAGE_URL_STRING = "noTestImage"
         private const val TEST_IMAGE_URL_STRING = "testImage"
-
+        private const val PAGINATION_ITEMS = 20
         private fun getBeerPlaceHolder(position: Int) = Beer(
             "Your favourite beer description",
             "01/1970",
