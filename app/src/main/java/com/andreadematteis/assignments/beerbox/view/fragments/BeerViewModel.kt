@@ -77,7 +77,7 @@ class BeerViewModel @Inject constructor(
         viewModelScope.launch {
             val beerList = withContext(Dispatchers.IO) {
                 kotlin.runCatching {
-                    val image = beer.imageUrl?.let {
+                    val image = beer.imageUrl.takeUnless { it.isNullOrBlank() }?.let {
                         BitmapFactory.decodeStream(
                             imageRepository.getImage(
                                 it.replace(BuildConfig.IMAGES_BASE_URL, "")

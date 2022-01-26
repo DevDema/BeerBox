@@ -26,4 +26,5 @@
     <string name="two_strings_trattino_spaced">%s - %s</string>
     <string name="reset_label">Reset</string>
     <string name="first_brewing_date_semi_colon">First Brewing Date:</string>
+    <string name="open_date_picker_label">Open Date Picker</string>
 </resources>

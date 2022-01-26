@@ -20,6 +20,7 @@ import java.util.*
 class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
 
     private var isPickerOpening = false
+    private var isDateFromPicker = false
     private val viewModel: FilterViewModel by activityViewModels()
     private lateinit var binding: FragmentBeerFiltersBinding
     private val args: MoreFilterSheetDialogFragmentArgs by navArgs()
@@ -39,14 +40,13 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.brewingTimeText.inputType = InputType.TYPE_NULL
-        binding.brewingTimeText.keyListener = null
         binding.brewingTimeTextInputLayout.setStartIconOnClickListener {
-            if(!isPickerOpening) {
+            if (!isPickerOpening) {
                 isPickerOpening = true
                 openDatePicker()
             }
         }
+
         binding.cancelLabel.setOnClickListener {
             dismiss()
         }
@@ -123,10 +123,25 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
         viewModel.datesFilter.observe(viewLifecycleOwner) {
             if (!it.isNullOrEmpty()) {
                 binding.byBrewingTimeLabel.isChecked = true
-                binding.brewingTimeText.setText(it)
 
-                binding.filterLabel.isEnabled =
-                    binding.byBrewingTimeLabel.isChecked
+                if(isDateFromPicker) {
+                    binding.brewingTimeText.setText(it)
+                    isDateFromPicker = false
+                }
+
+                if(it.trim().length == 23) {
+                    if (Regex(DATE_MATCHER_REGEX).matches(it.trim())) {
+                        binding.brewingTimeTextInputLayout.error = null
+                        binding.filterLabel.isEnabled =
+                            binding.byBrewingTimeLabel.isChecked
+                    } else {
+                        binding.filterLabel.isEnabled = false
+                        binding.brewingTimeTextInputLayout.error = "Invalid date range"
+                    }
+                } else {
+                    binding.brewingTimeTextInputLayout.error = null
+                    binding.filterLabel.isEnabled = false
+                }
             } else {
                 binding.filterLabel.isEnabled = false
             }
@@ -142,7 +157,7 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
             }
         }
 
-        if(args.nameFilter.isNotEmpty()) {
+        if (args.nameFilter.isNotEmpty()) {
             viewModel.forceClear()
         }
 
@@ -173,7 +188,7 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
                         timeInMillis = it.second
                     }.time
 
-
+                    isDateFromPicker = true
                     viewModel.datesFilter.value = getString(
                         R.string.two_strings_trattino_spaced,
                         dateFormat.format(startDate),
@@ -197,5 +212,7 @@ class MoreFilterSheetDialogFragment : BottomSheetDialogFragment() {
     companion object {
         private const val TAG_DATE_PICKER = "DATE_PICKER_BREWING"
         const val SAVED_STATE_HANDLE_FILTER = "SAVED_STATE_HANDLE_FILTER"
+
+        private const val DATE_MATCHER_REGEX = "[0-9]{2}/[0-9]{2}/[0-9]{4} - [0-9]{2}/[0-9]{2}/[0-9]{4}"
     }
 }
