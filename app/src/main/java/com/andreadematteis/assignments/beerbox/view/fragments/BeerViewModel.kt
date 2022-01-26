@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andreadematteis.assignments.beerbox.BuildConfig
 import com.andreadematteis.assignments.beerbox.model.Beer
-import com.andreadematteis.assignments.beerbox.network.BeerRepository
-import com.andreadematteis.assignments.beerbox.network.ImageRepository
+import com.andreadematteis.assignments.beerbox.network.repositories.BeerRepository
+import com.andreadematteis.assignments.beerbox.network.repositories.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

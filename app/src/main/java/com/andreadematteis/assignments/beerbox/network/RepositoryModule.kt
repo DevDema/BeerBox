@@ -1,5 +1,7 @@
 package com.andreadematteis.assignments.beerbox.network
 
+import com.andreadematteis.assignments.beerbox.network.repositories.BeerRepository
+import com.andreadematteis.assignments.beerbox.network.repositories.ImageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,7 +1,10 @@
-package com.andreadematteis.assignments.beerbox.network
+package com.andreadematteis.assignments.beerbox.network.repositories
 
 import com.andreadematteis.assignments.beerbox.model.Beer
+import com.andreadematteis.assignments.beerbox.network.BeerService
+import com.andreadematteis.assignments.beerbox.utils.OpenForTesting
 
+@OpenForTesting
 class BeerRepository(
     private val service: BeerService
 ) {
