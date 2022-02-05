@@ -10,7 +10,7 @@ Use your favourite IDE (mine is Android Studio) to open the project and get your
 
 You will be shown a list of beers. Tap on one of it to show details and brewing date:\
 \
-![Home screen](screenshots/home.png)\
+![Home screen](screenshots/home.png)
 ![Beer detail screen](screenshots/details.png)\
 \
 You can also filter beers by name or brewing date. Tap on _All filters_:\
