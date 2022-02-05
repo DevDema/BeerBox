@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/beer_navigation"
+        app:startDestination="@id/beerFragment">
+
+    <fragment
+            android:id="@+id/beerFragment"
+            android:name="com.andreadematteis.assignments.beerbox.view.fragments.BeerFragment"
+            android:label="@string/beer_fragment_title"
+            tools:layout="@layout/fragment_beer">
+        <action
+                android:id="@+id/action_beerFragment_to_bottomSheet"
+                app:destination="@id/bottomSheet" />
+        <action
+                android:id="@+id/action_beerFragment_to_bottomSheetBeers"
+                app:destination="@id/bottomSheetBeers" />
+    </fragment>
+
+    <dialog
+            android:id="@+id/bottomSheet"
+            android:name="com.andreadematteis.assignments.beerbox.view.fragments.moreFilters.MoreFilterSheetDialogFragment"
+            tools:layout="@layout/fragment_beer_filters" >
+        <argument
+                android:name="nameFilter"
+                app:argType="string"
+                android:defaultValue='' />
+    </dialog>
+
+    <dialog
+            android:id="@+id/bottomSheetBeers"
+            android:name="com.andreadematteis.assignments.beerbox.view.fragments.beerDetails.BeerDetailsBottomDialogFragment"
+            tools:layout="@layout/beer_bottom_layout" >
+        <argument
+                android:name="beer"
+                app:argType="com.andreadematteis.assignments.beerbox.model.Beer" />
+        <argument
+                android:name="image"
+                app:argType="android.graphics.Bitmap" />
+    </dialog>
+</navigation>

@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Beer Box</string>
+    <string name="beer_fragment_title">BeerFragment</string>
+    <string name="search_label">Search</string>
+    <string name="beer_box_title">Beer <b>Box</b></string>
+    <string name="weekend_offers_label">Weekend Offers</string>
+    <string name="weekend_offers_subtitle">Free shipping on orders over 60€</string>
+    <string name="blonde_label">Blonde</string>
+    <string name="lager_label">Lager</string>
+    <string name="malts_label">Malts</string>
+    <string name="stouts_strong_label"><![CDATA[Stouts & Strong]]></string>
+    <string name="more_info_button_text">More info</string>
+    <string name="no_results_label">Seems like no beer matches your search!</string>
+    <string name="retry_label">Retry</string>
+    <string name="request_failed_beers">Cannot load the list of beers.\nCheck your internet connection first!</string>
+    <string name="all_filters_label">All filters</string>
+    <string name="all_filters_number_label">All filters (%d)</string>
+    <string name="name_label">Name</string>
+    <string name="filter_by_name">Beer name</string>
+    <string name="by_name_label">By Name:</string>
+    <string name="by_brewing_time_frame_label">By brewing timeframe:</string>
+    <string name="timeframe_label">dd/MM/yyyy - dd/MM/yyyy</string>
+    <string name="filter_label">Filter</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="select_brewing_timeframe_label">Select brewing timeframe</string>
+    <string name="two_strings_trattino_spaced">%s - %s</string>
+    <string name="reset_label">Reset</string>
+    <string name="first_brewing_date_semi_colon">First Brewing Date:</string>
+    <string name="open_date_picker_label">Open Date Picker</string>
+</resources>
